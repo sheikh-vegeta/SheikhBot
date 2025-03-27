@@ -33,6 +33,9 @@ flowchart TD
     style C fill:#bfb,stroke:#333,stroke-width:2px
     style G fill:#ff9,stroke:#333,stroke-width:2px
 ```
+[![Scheduled Web Crawling](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/crawl.yml/badge.svg)](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/crawl.yml)
+[![pages-build-deployment](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/pages/pages-build-deployment)
+[![Domain Processing and Dataset Creation](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/domain_processor.yml/badge.svg)](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/domain_processor.yml)
 
 ## ✨ Key Features | মূল বৈশিষ্ট্যাবলী
 

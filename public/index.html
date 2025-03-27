@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Search - Advanced Web Crawler and SEO Analysis Tool</title>
+    <meta name="description" content="A powerful web crawler and SEO analysis tool designed to help make your website discoverable to Search.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script defer src="/_vercel/insights/script.js"></script>
+    <meta name="theme-color" content="#4a6cf7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#18212f" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="assets/sheikh-192.png">
+    <link href="https://fonts.cdnfonts.com/css/li-ador-noirrit?styles=87152" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #f76c4a;
+            --dark-color: #18212f;
+            --light-color: #f8f9fa;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            --font-primary: 'Li Ador Noirrit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--light-color);
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Hero section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #5d7bf7 100%);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: white;
+            color: var(--primary-color);
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            border: 2px solid transparent;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+        
+        .cta-button.secondary {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        /* Features section */
+        .features {
+            padding: 5rem 0;
+            background-color: white;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+        
+        .section-header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .feature-card p {
+            color: #666;
+        }
+        
+        /* Installation section */
+        .installation {
+            padding: 5rem 0;
+            background-color: #f8f9fa;
+        }
+        
+        .code-block {
+            background-color: var(--dark-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+        
+        .code-block code {
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+        }
+        
+        /* Quick Start */
+        .quick-start {
+            padding: 5rem 0;
+            background-color: white;
+        }
+        
+        .steps {
+            margin-top: 2rem;
+        }
+        
+        .step {
+            display: flex;
+            margin-bottom: 2rem;
+        }
+        
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 1.5rem;
+        }
+        
+        .step-content h3 {
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        /* GitHub Actions */
+        .github-actions {
+            padding: 5rem 0;
+            background-color: #f8f9fa;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.5rem;
+        }
+        
+        .social-links a:hover {
+            color: white;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 0;
+                padding: 0.5rem 0;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .step {
+                flex-direction: column;
+            }
+            
+            .step-number {
+                margin-bottom: 1rem;
+                margin-right: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .feature-card {
+                margin: 1rem;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .bn {
+            font-family: var(--font-primary);
+            line-height: 1.8;
+        }
+
+        .en {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Add multilingual support */
+        [lang="bn"] .bn-text {
+            display: block;
+        }
+
+        [lang="bn"] .en-text {
+            display: none;
+        }
+
+        [lang="en"] .bn-text {
+            display: none;
+        }
+
+        [lang="en"] .en-text {
+            display: block;
+        }
+
+        /* Trusted Partners Section */
+        .trusted-partners {
+            padding: 4rem 0;
+            background: #f8f9fa;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 2rem;
+            align-items: center;
+            justify-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .partner-logo {
+            max-width: 160px;
+            height: auto;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+
+        .partner-logo:hover {
+            filter: grayscale(0%);
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .analysis-form {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group input[type="url"] {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .analysis-options {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .results-container {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .error {
+            color: #dc3545;
+            padding: 1rem;
+            background: #ffe6e6;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+    </style>
+
+    <!-- Language metadata -->
+    <link rel="alternate" hreflang="bn" href="?lang=bn">
+    <link rel="alternate" hreflang="en" href="?lang=en">
+    <meta name="language" content="bn_BD">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <img src="assets/sheikh.png" alt="Central Search Logo">
+                    <span class="logo-text">Central Search</span>
+                </div>
+                <div class="mobile-menu-toggle" id="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#quick-start">Quick Start</a></li>
+                    <li><a href="#github-actions">GitHub Actions</a></li>
+                    <li><a href="https://github.com/sheikh-vegeta/SheikhBot" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="docs/index.html">Documentation</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Central Search</h1>
+            <p>A powerful web crawler and SEO analysis tool designed to help make your website discoverable to Search.</p>
+            <div>
+                <a href="#installation" class="cta-button">Get Started</a>
+                <a href="docs/index.html" class="cta-button secondary">View Documentation</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Key Features</h2>
+                <p>Powerful tools to optimize your website for search engines and improve visibility</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-search"></i>
+                    <h3>SEO Analysis</h3>
+                    <p>Get detailed insights on title tags, meta descriptions, headings, content quality, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Multi-Platform Testing</h3>
+                    <p>Crawl your website from desktop, mobile, and image search perspectives to ensure comprehensive coverage.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fab fa-js"></i>
+                    <h3>JavaScript Rendering</h3>
+                    <p>Test how search engines see your JavaScript-heavy pages and ensure proper indexing.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-robot"></i>
+                    <h3>Robots.txt Compliance</h3>
+                    <p>Verify your robots.txt is correctly configured and understand crawler behavior.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>IndexNow Integration</h3>
+                    <p>Instantly notify search engines about new or updated content to speed up indexing.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Beautiful Reports</h3>
+                    <p>Modern interface for browsing findings and recommendations to improve your site.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="installation" id="installation">
+        <div class="container">
+            <div class="section-header">
+                <h2>Installation</h2>
+                <p>Get up and running with Central Search in minutes</p>
+            </div>
+            <div class="code-block">
+                <code>
+# Clone the repository
+git clone https://github.com/sheikh-vegeta/SheikhBot.git
+cd SheikhBot
+
+# Install dependencies
+pip install -r requirements.txt
+                </code>
+            </div>
+            <p>Alternatively, you can install using pip:</p>
+            <div class="code-block">
+                <code>
+pip install central-search
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-start" id="quick-start">
+        <div class="container">
+            <div class="section-header">
+                <h2>Quick Start Guide</h2>
+                <p>Start analyzing your website and improving SEO in just a few steps</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Analyze a single site</h3>
+                        <p>Run a basic analysis of your website to get started.</p>
+                        <div class="code-block">
+                            <code>python main.py crawl https://example.com</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Configure SEO analysis</h3>
+                        <p>Customize the crawler behavior by editing <code>config.yml</code> to match your needs.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Generate reports</h3>
+                        <p>Create beautiful reports to view your SEO analysis results.</p>
+                        <div class="code-block">
+                            <code>python main.py ghpages</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Set up IndexNow integration</h3>
+                        <p>Configure IndexNow to instantly notify search engines about content changes.</p>
+                        <div class="code-block">
+                            <code>python main.py indexnow genkey</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="github-actions" id="github-actions">
+        <div class="container">
+            <div class="section-header">
+                <h2>Automated Monitoring with GitHub Actions</h2>
+                <p>Set up regular SEO monitoring for your websites</p>
+            </div>
+            <p>The included GitHub Actions workflow allows you to automatically run Central Search on a schedule or manually:</p>
+            <ol>
+                <li>Fork the repository to your GitHub account</li>
+                <li>Enable GitHub Actions in your repository settings</li>
+                <li>Customize the workflow in <code>.github/workflows/crawl.yml</code></li>
+                <li>Push changes to your repository</li>
+                <li>Access your SEO reports on GitHub Pages</li>
+            </ol>
+            <p>You can manually trigger a crawl and specify URLs, crawl depth, and which crawlers to use directly from the GitHub Actions tab.</p>
+        </div>
+    </section>
+
+    <section class="trusted-partners">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="en">Trusted Partners</h2>
+                <h2 class="bn">বিশ্বস্ত অংশীদার</h2>
+                <p class="en">Empowering businesses worldwide with advanced SEO solutions</p>
+                <p class="bn">উন্নত এসইও সমাধানের মাধ্যমে বিশ্বব্যাপী ব্যবসায়কে শক্তিশালী করা</p>
+            </div>
+            <div class="partners-grid">
+                <img src="assets/786-rc-icon-round.png" alt="RC Icon" class="partner-logo">
+                <img src="assets/microsoft.png" alt="Microsoft" class="partner-logo">
+                <img src="assets/HubSpot-Logo.wine.svg" alt="HubSpot" class="partner-logo">
+                <img src="assets/Moz_logo.svg.png" alt="Moz" class="partner-logo">
+                <img src="assets/govt.webp" alt="Government" class="partner-logo">
+                <img src="assets/VORTEX_logo_with_VIVOTEK.png" alt="Vortex" class="partner-logo">
+                <img src="assets/logo (2).svg" alt="Partner" class="partner-logo">
+                <img src="assets/id5KWlBICs_logos.svg" alt="Partner" class="partner-logo">
+            </div>
+        </div>
+    </section>
+
+    <section class="web-analysis" id="analyze">
+        <div class="container">
+            <div class="section-header">
+                <h2>Analyze Your Website</h2>
+                <p>Get instant SEO insights and optimization recommendations</p>
+            </div>
+            
+            <div class="analysis-form">
+                <form id="seoAnalysisForm" onsubmit="analyzeWebsite(event)">
+                    <div class="form-group">
+                        <input type="url" id="websiteUrl" 
+                               placeholder="Enter website URL" required>
+                        <select id="crawlerType">
+                            <option value="all">All Crawlers</option>
+                            <option value="desktop">Desktop Only</option>
+                            <option value="mobile">Mobile Only</option>
+                        </select>
+                    </div>
+                    <div class="analysis-options">
+                        <label>
+                            <input type="checkbox" id="generateSitemap" checked>
+                            Generate Sitemap
+                        </label>
+                        <label>
+                            <input type="checkbox" id="submitIndexNow">
+                            Submit to IndexNow
+                        </label>
+                    </div>
+                    <button type="submit" class="cta-button">Analyze Now</button>
+                </form>
+            </div>
+            
+            <div id="analysisResults" class="results-container" style="display:none">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Central Search</h3>
+                        <a href="https://github.com/sheikh-vegeta/SheikhBot" target="_blank" rel="noopener noreferrer" title="View on GitHub"><i class="fab fa-github" aria-hidden="true"></i><span class="sr-only">GitHub</span></a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" title="Follow us on Twitter"><i class="fab fa-twitter" aria-hidden="true"></i><span class="sr-only">Twitter</span></a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" title="Connect on LinkedIn"><i class="fab fa-linkedin" aria-hidden="true"></i><span class="sr-only">LinkedIn</span></a>
+                        <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="#quick-start">Quick Start</a></li>
+                        <li><a href="#github-actions">GitHub Actions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Documentation</h3>
+                    <ul class="footer-links">
+                        <li><a href="docs/index.html">User Guide</a></li>
+                        <li><a href="docs/search.html">SEO Tools</a></li>
+                        <li><a href="QUICKSTART.md">Quick Start Guide</a></li>
+                        <li><a href="README.md">README</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://www.indexnow.org/" target="_blank" rel="noopener noreferrer">IndexNow</a></li>
+                        <li><a href="https://github.com/sheikh-vegeta/SheikhBot/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+                        <li><a href="https://github.com/sheikh-vegeta/SheikhBot/releases" target="_blank" rel="noopener noreferrer">Releases</a></li>
+                        <li><a href="https://github.com/sheikh-vegeta/SheikhBot/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Central Search. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="language-toggle" onclick="toggleLanguage()">
+        <span class="en">বাংলা</span>
+        <span class="bn">English</span>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu').addEventListener('click', function() {
+            document.getElementById('nav-links').classList.toggle('active');
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Close mobile menu if open
+                document.getElementById('nav-links').classList.remove('active');
+            });
+        });
+
+        // Add after existing scripts
+        function toggleLanguage() {
+            const html = document.documentElement;
+            const currentLang = html.getAttribute('lang');
+            html.setAttribute('lang', currentLang === 'bn' ? 'en' : 'bn');
+        }
+
+        async function analyzeWebsite(event) {
+            event.preventDefault();
+            
+            const url = document.getElementById('websiteUrl').value;
+            const options = {
+                crawler_types: [document.getElementById('crawlerType').value],
+                generate_sitemap: document.getElementById('generateSitemap').checked,
+                submit_to_indexnow: document.getElementById('submitIndexNow').checked
+            };
+            
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url, ...options })
+                });
+                
+                if (!response.ok) throw new Error('Analysis failed');
+                
+                const results = await response.json();
+                displayResults(results);
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('analysisResults');
+            container.style.display = 'block';
+            // ... Implement result display logic
+        }
+
+        function showError(message) {
+            const container = document.getElementById('analysisResults');
+            container.style.display = 'block';
+            container.innerHTML = `<div class="error">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

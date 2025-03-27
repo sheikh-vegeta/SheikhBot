@@ -1,227 +1,137 @@
-# Central Search
+# 🌐 Central Search: SEO অপ্টিমাইজেশন Toolkit
 
-A powerful web crawler and SEO analysis tool designed to help make your website discoverable to Search. Central (formerly Sheikh Webmasters) provides advanced crawling capabilities, content extraction, SEO insights, and a beautiful interface for improving your site's search presence.
+![Central Search Logo](https://raw.githubusercontent.com/sheikh-vegeta/SheikhBot/refs/heads/main/assets/sheikh.png)
 
-## Features
+## 🚀 Project Overview | প্রোজেক্ট পরিচিতি
 
-- **SEO Analysis**: Get detailed insights on title tags, meta descriptions, headings, content quality, and more
-- **Multi-Platform Testing**: Crawl your website from desktop, mobile, and image search perspectives
-- **JavaScript Rendering**: Test how search engines see your JavaScript-heavy pages
-- **Robots.txt Compliance**: Verify your robots.txt is correctly configured
-- **HTTP Caching**: Check your site's ETag and If-Modified-Since headers for efficient crawling
-- **Structured Data Analysis**: Validate schema markup and structured data
-- **Content Optimization**: Get recommendations for improving content quality and relevance
-- **Full-Text Search**: Index and search your site content to find optimization opportunities
-- **IndexNow Integration**: Instantly notify search engines about new or updated content
-- **Beautiful Reports**: Modern interface for browsing findings and recommendations
-- **Automated Monitoring**: Schedule regular crawls with GitHub Actions
+Central Search is an advanced web crawling and SEO optimization toolkit designed to elevate your website's search engine performance and discoverability.
 
-## Installation
+### 🔗 Community & Support | সম্প্রদায় এবং সহায়তা
+- **Telegram Channel**: [t.me/RecentCoders](https://t.me/RecentCoders)
+- **GitHub**: [Sheikh Bot Repository](https://github.com/sheikh-vegeta/SheikhBot)
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/central.git
-   cd central
-   ```
+## 🌈 Project Flow Diagram | প্রোজেক্ট প্রবাহ ডায়াগ্রাম
 
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Configure the crawler by editing `config.yml`
-
-## Usage
-
-### Basic SEO Analysis
-
-To analyze a website for SEO opportunities, run:
-
-```bash
-python main.py crawl https://example.com
+```mermaid
+flowchart TD
+    A[Website] -->|Crawl| B{Central Search}
+    B -->|Analyze| C[SEO Insights]
+    B -->|Render| D[JavaScript Detection]
+    B -->|Validate| E[Structured Data]
+    C -->|Optimize| F[Content Recommendations]
+    F -->|Notify| G[IndexNow]
+    G -->|Instant Indexing| H[Search Engines]
+    
+    subgraph Advanced Features | উন্নত বৈশিষ্ট্য
+        D
+        E
+        F
+    end
+    
+    style A fill:#f9f,stroke:#333,stroke-width:4px
+    style B fill:#bbf,stroke:#f66,stroke-width:2px
+    style C fill:#bfb,stroke:#333,stroke-width:2px
+    style G fill:#ff9,stroke:#333,stroke-width:2px
 ```
 
-The results will be saved to the configured output directory (default: `data/`).
+## ✨ Key Features | মূল বৈশিষ্ট্যাবলী
 
-### GitHub Actions Workflow
+### 🔍 Advanced SEO Analysis | উন্নত SEO বিশ্লেষণ
+- **Deep Crawler**: Multi-platform website analysis | বহু-প্লাটফর্ম ওয়েবসাইট বিশ্লেষণ
+- **JavaScript Rendering**: Comprehensive page rendering detection | সম্পূর্ণ পৃষ্ঠা রেন্ডারিং সনাক্তকরণ
+- **Structured Data Validation**: Schema markup and semantic web optimization | স্কিমা মার্কআপ এবং সিমেন্টিক ওয়েব অপ্টিমাইজেশন
+- **Performance Insights**: Detailed SEO recommendation engine | বিস্তারিত SEO সুপারিশ ইঞ্জিন
 
-The included GitHub Actions workflow allows you to automatically run Central Search on a schedule or manually:
+### 🤖 Intelligent Optimization | বুদ্ধিমান অপ্টিমাইজেশন
+- **Content Analysis**: Advanced content quality scoring | উন্নত কন্টেন্ট গুণমান স্কোরিং
+- **Mobile Optimization**: Cross-platform compatibility checks | ক্রস-প্লাটফর্ম সামঞ্জস্যতা পরীক্ষা
+- **IndexNow Integration**: Instant search engine indexing | তৎক্ষণাৎ সার্চ ইঞ্জিন ইনডেক্সিং
+- **Automated Monitoring**: Continuous website performance tracking | ক্রমাগত ওয়েবসাইট পারফরমেন্স ট্র্যাকিং
 
-1. The workflow is configured in `.github/workflows/crawl.yml`
-2. It will run daily at midnight UTC by default
-3. You can manually trigger a run from the Actions tab in your GitHub repository
-4. When manually triggering, you can specify:
-   - URLs to crawl (comma-separated)
-   - Crawl depth
-   - Which crawlers to use (desktop, mobile, image)
+## 🛠️ Quick Start | দ্রুত শুরু
 
-#### Troubleshooting GitHub Actions
-
-If you encounter indentation errors in your GitHub Actions workflow:
-
-1. We've restructured the workflow to use dedicated script files located in `scripts/github_actions/`:
-   - `modify_config.py`: Creates a modified configuration based on input parameters
-   - `run_crawler.py`: Runs the Central crawler with a specified URL and configuration
-   - `build_index.py`: Builds an index of crawled results for GitHub Pages
-   - `index_template.html`: Template for the GitHub Pages index
-
-2. This approach avoids YAML indentation issues that often occur with multi-line Python scripts embedded in workflows.
-
-3. If you need to modify the workflow scripts:
-   - Edit the Python files directly in the `scripts/github_actions/` directory
-   - Make sure to commit and push these changes to your repository
-
-4. On Windows, make sure the script files are recognized as executable in git:
-   ```bash
-   git update-index --chmod=+x scripts/github_actions/*.py
-   ```
-
-### IndexNow Integration
-
-Central Search includes full support for the [IndexNow](https://www.indexnow.org/) protocol, which allows websites to instantly inform search engines about content changes. This significantly improves discovery time from days or weeks to just seconds.
-
-#### What is IndexNow?
-
-IndexNow is a simple ping that instantly notifies search engines when URLs are added, updated, or deleted. It's supported by Microsoft Bing, Yandex, Naver, Seznam.cz, and Yep - with more search engines expected to join.
-
-#### Setting Up IndexNow
-
-1. Configure IndexNow in your `config.yml`:
-   ```yaml
-   indexnow:
-     enabled: true
-     api_key: "YOUR_INDEXNOW_API_KEY"  # Generate a key at indexnow.org
-     key_location: ""  # Optional URL where your key file is hosted
-     search_engines:
-       - "default"  # Use the unified API (all participating engines)
-     auto_submit: true  # Automatically submit URLs after crawling
-     bulk_submit: true  # Submit URLs in bulk where possible
-     generate_key_file: true  # Generate key file in export directory
-   ```
-
-2. Generate an IndexNow key file (required for verification):
-   ```bash
-   python main.py indexnow genkey
-   ```
-   This creates a key file (e.g., `cb7a0c39fe74468ba119283e95c08b00.txt`) that you need to host at the root of your website.
-
-3. Verify your key file is accessible:
-   ```
-   https://www.example.com/cb7a0c39fe74468ba119283e95c08b00.txt
-   ```
-   The file should contain only your API key.
-
-#### Submitting URLs with IndexNow
-
-- **During crawling**: URLs are automatically submitted if `auto_submit` is enabled in your config:
-  ```bash
-  python main.py crawl https://example.com
-  ```
-
-- **Submit URLs manually**:
-  ```bash
-  # Submit a single URL
-  python main.py indexnow submit https://example.com/new-page
-
-  # Submit multiple URLs
-  python main.py indexnow submit https://example.com/page1 https://example.com/page2
-
-  # Submit URLs in bulk (more efficient, all URLs must be from same domain)
-  python main.py indexnow submit --bulk https://example.com/page1 https://example.com/page2
-
-  # Submit to a specific search engine
-  python main.py indexnow submit --search-engine bing https://example.com/page
-  ```
-
-#### Benefits of IndexNow
-
-- **Faster Indexing**: Get your content discovered and indexed in seconds instead of waiting for crawlers
-- **Reduced Crawl Load**: Search engines can focus on crawling changes, reducing unnecessary hits to your server
-- **Better Resource Utilization**: More efficient for both website owners and search engines
-- **Broader Search Coverage**: Get discovered across multiple search engines with a single protocol
-
-### Configuration Options
-
-Edit `config.yml` to customize crawling behavior:
-
-- Set crawl depth, delay, and timeouts
-- Configure specialized crawlers (desktop, mobile, image)
-- Define content extraction selectors
-- Adjust SEO analysis parameters
-- Configure storage and export settings
-
-### Advanced Commands
-
-View all available commands:
-
-```bash
-python main.py --help
-```
-
-Export analysis data:
-
-```bash
-python main.py export --output seo-report.json --format json
-```
-
-Generate SEO reports for viewing:
-
-```bash
-python main.py ghpages --directory docs
-```
-
-### Automated Monitoring with GitHub Actions
-
-For regular SEO monitoring:
-
-1. Fork this repository
-2. Enable GitHub Actions
-3. Configure the workflow in `.github/workflows/crawl.yml`
-4. Push changes to your repository
-5. Access your SEO reports on GitHub Pages
-
-## Web Interface
-
-After analyzing your site, you can browse the results using the built-in web interface:
-
-1. Generate the report site:
-   ```bash
-   python main.py ghpages
-   ```
-
-2. Open `docs/index.html` in your browser or deploy to GitHub Pages
-
-Features:
-- SEO scores and recommendations
-- Content analysis with improvement suggestions
-- Mobile-friendliness metrics
-- Structured data validation
-- Dark mode support
-- Mobile-friendly interface
-
-## SEO Best Practices
-
-Central Search helps you implement these critical SEO best practices:
-
-- Optimize title tags and meta descriptions
-- Create a logical heading structure (H1, H2, H3)
-- Ensure content meets quality thresholds
-- Optimize for mobile devices
-- Implement schema markup correctly
-- Ensure proper internal linking
-- Optimize images with alt text
-- Improve page load speed
-
-## Requirements
-
+### Prerequisites | প্রাক-আবশ্যকতাসমূহ
 - Python 3.8+
-- Chrome/Chromium (for JavaScript rendering)
-- Dependencies listed in requirements.txt
+- Chrome/Chromium
+- Git
 
-## License
+### Installation | ইনস্টলেশন
+```bash
+# Clone Repository | রিপোসিটরি ক্লোন করুন
+git clone https://github.com/sheikh-vegeta/SheikhBot.git
+cd SheikhBot
 
-MIT License
+# Install Dependencies | ডিপেন্ডেন্সি ইনস্টল করুন
+pip install -r requirements.txt
+```
 
-## Contributing
+### Basic Usage | বেসিক ব্যবহার
+```bash
+# Crawl and Analyze Website | ওয়েবসাইট ক্রল এবং বিশ্লেষণ
+python main.py crawl https://example.com
 
-Contributions are welcome! Please feel free to submit a Pull Request. 
+# Submit URLs to IndexNow | IndexNow-এ URL সাবমিট করুন
+python main.py indexnow submit https://example.com/new-page
+```
+
+## 🚀 Advanced Configuration | উন্নত কনফিগারেশন
+
+### SEO Optimization Strategies | SEO অপ্টিমাইজেশন কৌশল
+- Intelligent title tag optimization | বুদ্ধিমান টাইটেল ট্যাগ অপ্টিমাইজেশন
+- Semantic heading structure | সিমেন্টিক হেডিং কাঠামো
+- Mobile-first design principles | মোবাইল-প্রথম ডিজাইন নীতিমালা
+- Schema markup implementation | স্কিমা মার্কআপ বাস্তবায়ন
+- Performance and accessibility scoring | পারফরমেন্স এবং অ্যাক্সেসিবিলিটি স্কোরিং
+
+## 🔧 Configuration Options | কনফিগারেশন বিকল্পসমূহ
+
+Create a `config.yml` to customize:
+- Crawl depth and behavior | ক্রল গভীরতা এবং আচরণ
+- Content extraction rules | কন্টেন্ট এক্সট্রাকশন নিয়মাবলী
+- SEO analysis parameters | SEO বিশ্লেষণ পরামিতি
+- Notification and reporting preferences | বিজ্ঞপ্তি এবং প্রতিবেদন পছন্দসমূহ
+
+## 💡 Best Practices | সর্বোত্তম অনুশীলন
+
+1. **Regular Audits**: Schedule periodic SEO scans | নিয়মিত SEO স্ক্যান সূচীভুক্ত করুন
+2. **Performance Monitoring**: Track website discoverability | ওয়েবসাইটের অনুসন্ধানযোগ্যতা ট্র্যাক করুন
+3. **Continuous Optimization**: Implement recommended changes | সুপারিশকৃত পরিবর্তন বাস্তবায়ন করুন
+4. **Stay Updated**: Keep crawler and dependencies current | ক্রলার এবং ডিপেন্ডেন্সিগুলি হালনাগাদ রাখুন
+
+## 🤝 Contributing | অবদান
+
+Contributions are welcome! | অবদান স্বাগত!
+
+### How to Contribute | অবদান দানের পদ্ধতি
+1. Fork the repository | রিপোসিটরি ফোর্ক করুন
+2. Create a feature branch | একটি ফিচার ব্রাঞ্চ তৈরি করুন
+3. Commit your changes | আপনার পরিবর্তনগুলি কমিট করুন
+4. Push to the branch | ব্রাঞ্চে পুশ করুন
+5. Create a Pull Request | পুল রিকোয়েস্ট তৈরি করুন
+
+## 📄 License | লাইসেন্স
+
+MIT License - Open and flexible | মুক্ত এবং柔軟
+
+## 🌟 Powered By | সমর্থিত
+
+- **Community**: [t.me/RecentCoders](https://t.me/RecentCoders)
+- **Technology**: Python, Advanced Web Crawling Techniques | পাইথন, উন্নত ওয়েব ক্রলিং কৌশল
+- **Vision**: Democratizing SEO Optimization | SEO অপ্টিমাইজেশনকে গণতান্ত্রিক করা
+
+## 🛡️ Security Notes | নিরাপত্তা বিজ্ঞপ্তি
+
+- Protect sensitive API keys | সংবেদনশীল API কী সুরক্ষিত রাখুন
+- Regular security updates | নিয়মিত নিরাপত্তা আপডেট
+- Use trusted dependencies | বিশ্বস্ত ডিপেন্ডেন্সি ব্যবহার করুন
+- Implement proper access controls | উপযুক্ত অ্যাক্সেস নিয়ন্ত্রণ বাস্তবায়ন করুন
+
+---
+
+### 📞 Contact & Support | যোগাযোগ এবং সহায়তা
+
+- **Telegram**: [Recent Coders](https://t.me/RecentCoders)
+- **Email**: support@sheikhbot.dev
+- **Issues**: [GitHub Issues](https://github.com/sheikh-vegeta/SheikhBot/issues)
+
+**Made with ❤️ by the Open Source Community | ওপেন সোর্স সম্প্রদায় দ্বারা প্রণীত**

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SheikhBot - Crawl Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/li-ador-noirrit?styles=87152" rel="stylesheet">
+    <style>
+        :root {
+            --font-primary: 'Li Ador Noirrit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            padding-top: 20px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+            font-family: var(--font-primary);
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .header {
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .result-card {
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        .pagination-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        .stats-container {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .highlight {
+            background-color: yellow;
+            padding: 2px;
+        }
+        .filter-badge {
+            margin-right: 5px;
+            cursor: pointer;
+        }
+        .navbar-brand img {
+            height: 30px;
+            margin-right: 10px;
+        }
+        .dark-mode {
+            background-color: #222;
+            color: #f5f5f5;
+        }
+        .dark-mode .card {
+            background-color: #333;
+            color: #f5f5f5;
+        }
+        .dark-mode .stats-container {
+            background-color: #333;
+            color: #f5f5f5;
+        }
+        .bn {
+            font-family: var(--font-primary);
+            line-height: 1.8;
+        }
+
+        .en {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Add language switcher styles */
+        .lang-switch {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Advanced web crawler and SEO analysis results, providing insights into website optimization and search discoverability.">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Sheikh">
+    <meta name="keywords" content="web crawler, seo analysis, website optimization, search engine optimization">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="SheikhBot - Advanced Web Crawler Results">
+    <meta property="og:description" content="Comprehensive SEO analysis and website optimization insights from SheikhBot crawler.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sheikh-bot.vercel.app/">
+    <meta property="og:image" content="https://sheikh-bot.vercel.app/assets/sheikh.png">
+    <meta property="og:site_name" content="SheikhBot">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SheikhBot - Advanced Web Crawler Results">
+    <meta name="twitter:description" content="Comprehensive SEO analysis and website optimization insights from SheikhBot crawler.">
+    <meta name="twitter:image" content="https://sheikh-bot.vercel.app/assets/sheikh.png">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SheikhBot",
+      "description": "Advanced web crawler and SEO analysis toolkit for website optimization",
+      "url": "https://sheikh-bot.vercel.app",
+      "applicationCategory": "SEO Tool",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Sheikh"
+      },
+      "browserRequirements": "Requires JavaScript. Supports all modern browsers.",
+      "softwareVersion": "1.0.0"
+    }
+    </script>
+    <!-- Language metadata -->
+    <link rel="alternate" hreflang="bn" href="?lang=bn">
+    <link rel="alternate" hreflang="en" href="?lang=en">
+    <meta name="language" content="bn_BD">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <h1>SheikhBot Crawler</h1>
+                <p class="text-muted">A powerful web crawler for building searchable indexes</p>
+            </div>
+            <div class="d-flex align-items-center">
+                <button id="darkModeToggle" class="btn btn-sm btn-outline-secondary me-2">
+                    <i class="bi bi-moon"></i> Dark Mode
+                </button>
+                <span class="badge bg-primary" id="lastUpdated">Last updated: {{last_updated}}</span>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-container row g-3 text-center">
+            <div class="col-md-3">
+                <div class="p-3 border rounded">
+                    <h3 id="totalUrls">{{stats.total_urls}}</h3>
+                    <p class="text-muted mb-0">URLs Crawled</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded">
+                    <h3 id="totalPages">{{stats.total_pages}}</h3>
+                    <p class="text-muted mb-0">Pages Indexed</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded">
+                    <h3 id="totalImages">{{stats.total_images}}</h3>
+                    <p class="text-muted mb-0">Images Found</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded">
+                    <h3 id="crawlTime">{{stats.crawl_time}}s</h3>
+                    <p class="text-muted mb-0">Crawl Time</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-container">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search crawled content...">
+                </div>
+                <div class="col-md-2">
+                    <select id="typeFilter" class="form-select" aria-label="Filter by content type">
+                        <option value="all">All Types</option>
+                        <option value="desktop">Desktop</option>
+                        <option value="mobile">Mobile</option>
+                        <option value="image">Images</option>
+                        <option value="news">News</option>
+                        <option value="video">Videos</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="sortOrder" class="form-select" aria-label="Sort results by">
+                        <option value="date_desc">Newest First</option>
+                        <option value="date_asc">Oldest First</option>
+                        <option value="relevance">Relevance</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-3" id="activeFilters">
+                <!-- Active filters will be added here -->
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsContainer">
+            <div class="d-flex justify-content-center my-5">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <nav aria-label="Page navigation">
+                <ul class="pagination" id="pagination">
+                    <!-- Pagination will be added here -->
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Result Template -->
+        <template id="resultTemplate">
+            <div class="card result-card">
+                <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"></h6>
+                    <p class="card-url"></p>
+                    <p class="card-text content-preview"></p>
+                    <div class="metadata">
+                        <span class="badge bg-primary crawler-type"></span>
+                        <span class="badge bg-secondary content-type"></span>
+                        <span class="badge bg-info crawl-time"></span>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- No Results Template -->
+        <template id="noResultsTemplate">
+            <div class="alert alert-info text-center">
+                <h4>No results found</h4>
+                <p>Try adjusting your search terms or filters</p>
+            </div>
+        </template>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let allResults = [];
+        let filteredResults = [];
+        let currentPage = 1;
+        const resultsPerPage = 10;
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const typeFilter = document.getElementById('typeFilter');
+        const sortOrder = document.getElementById('sortOrder');
+        const activeFilters = document.getElementById('activeFilters');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const pagination = document.getElementById('pagination');
+        const resultTemplate = document.getElementById('resultTemplate');
+        const noResultsTemplate = document.getElementById('noResultsTemplate');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Fetch results from the index.json file
+        async function fetchResults() {
+            try {
+                const response = await fetch('index.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                allResults = await response.json();
+                filteredResults = [...allResults];
+                updateStats();
+                displayResults();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                resultsContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h4>Error loading results</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update statistics display
+        function updateStats() {
+            document.getElementById('totalUrls').textContent = 
+                allResults.filter((item, index, self) => 
+                    index === self.findIndex(t => t.url === item.url)
+                ).length;
+            
+            document.getElementById('totalPages').textContent = 
+                allResults.filter(item => item.crawler_type !== 'image').length;
+            
+            document.getElementById('totalImages').textContent = 
+                allResults.filter(item => item.crawler_type === 'image').length;
+            
+            document.getElementById('lastUpdated').textContent = 
+                `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        // Filter results based on search input and type filter
+        function filterResults() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedType = typeFilter.value;
+            
+            filteredResults = allResults.filter(item => {
+                // Filter by type
+                if (selectedType !== 'all' && item.crawler_type !== selectedType) {
+                    return false;
+                }
+                
+                // Filter by search term
+                if (searchTerm) {
+                    return (
+                        (item.title && item.title.toLowerCase().includes(searchTerm)) ||
+                        (item.url && item.url.toLowerCase().includes(searchTerm)) ||
+                        (item.content && item.content.toLowerCase().includes(searchTerm))
+                    );
+                }
+                
+                return true;
+            });
+            
+            // Sort results
+            sortResults();
+            
+            // Reset to first page
+            currentPage = 1;
+            
+            // Update display
+            displayResults();
+        }
+
+        // Sort results based on sort order selection
+        function sortResults() {
+            const selected = sortOrder.value;
+            
+            switch(selected) {
+                case 'date_desc':
+                    filteredResults.sort((a, b) => 
+                        new Date(b.crawl_time || 0) - new Date(a.crawl_time || 0));
+                    break;
+                case 'date_asc':
+                    filteredResults.sort((a, b) => 
+                        new Date(a.crawl_time || 0) - new Date(b.crawl_time || 0));
+                    break;
+                case 'relevance':
+                    // If there's a search term, sort by relevance
+                    const searchTerm = searchInput.value.toLowerCase();
+                    if (searchTerm) {
+                        filteredResults.sort((a, b) => {
+                            const aTitle = a.title || '';
+                            const bTitle = b.title || '';
+                            const aContent = a.content || '';
+                            const bContent = b.content || '';
+                            
+                            // Calculate relevance score
+                            const aScore = 
+                                (aTitle.toLowerCase().includes(searchTerm) ? 10 : 0) +
+                                (aContent.toLowerCase().includes(searchTerm) ? 5 : 0);
+                            
+                            const bScore = 
+                                (bTitle.toLowerCase().includes(searchTerm) ? 10 : 0) +
+                                (bContent.toLowerCase().includes(searchTerm) ? 5 : 0);
+                            
+                            return bScore - aScore;
+                        });
+                    }
+                    break;
+            }
+        }
+
+        // Display paginated results
+        function displayResults() {
+            resultsContainer.innerHTML = '';
+            
+            if (filteredResults.length === 0) {
+                const noResultsNode = document.importNode(noResultsTemplate.content, true);
+                resultsContainer.appendChild(noResultsNode);
+                
+                // Hide pagination
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
+            const startIndex = (currentPage - 1) * resultsPerPage;
+            const endIndex = Math.min(startIndex + resultsPerPage, filteredResults.length);
+            
+            // Get current page results
+            const pageResults = filteredResults.slice(startIndex, endIndex);
+            
+            // Display results
+            pageResults.forEach(item => {
+                const resultNode = document.importNode(resultTemplate.content, true);
+                
+                // Populate the template
+                resultNode.querySelector('.card-title').textContent = item.title || 'No Title';
+                
+                const urlElement = document.createElement('a');
+                urlElement.href = item.url;
+                urlElement.textContent = item.url;
+                urlElement.target = '_blank';
+                urlElement.rel = 'noopener noreferrer';
+                
+                resultNode.querySelector('.card-url').appendChild(urlElement);
+                
+                // Content preview
+                const contentPreview = item.content 
+                    ? item.content.substring(0, 200) + (item.content.length > 200 ? '...' : '')
+                    : 'No content available';
+                
+                resultNode.querySelector('.content-preview').textContent = contentPreview;
+                
+                // Metadata badges
+                resultNode.querySelector('.crawler-type').textContent = 
+                    `Crawler: ${item.crawler_type || 'unknown'}`;
+                
+                resultNode.querySelector('.content-type').textContent = 
+                    `Type: ${item.content_type ? item.content_type.split(';')[0] : 'unknown'}`;
+                
+                resultNode.querySelector('.crawl-time').textContent = 
+                    `Crawled: ${new Date(item.crawl_time).toLocaleString() || 'unknown'}`;
+                
+                // Highlight search terms if present
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    highlightSearchTerm(resultNode, searchTerm);
+                }
+                
+                resultsContainer.appendChild(resultNode);
+            });
+            
+            // Update pagination
+            updatePagination(totalPages);
+        }
+
+        // Highlight search terms in the result card
+        function highlightSearchTerm(resultNode, searchTerm) {
+            // Helper function to replace text with highlighted version
+            function highlightText(element, term) {
+                if (!element.textContent.toLowerCase().includes(term)) return;
+                
+                const innerHTML = element.innerHTML;
+                const index = innerHTML.toLowerCase().indexOf(term);
+                
+                if (index >= 0) {
+                    element.innerHTML = 
+                        innerHTML.substring(0, index) + 
+                        `<span class="highlight">${innerHTML.substring(index, index + term.length)}</span>` + 
+                        innerHTML.substring(index + term.length);
+                }
+            }
+            
+            // Apply to title and content preview
+            highlightText(resultNode.querySelector('.card-title'), searchTerm);
+            highlightText(resultNode.querySelector('.content-preview'), searchTerm);
+        }
+
+        // Update pagination controls
+        function updatePagination(totalPages) {
+            pagination.innerHTML = '';
+            
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            
+            const prevLink = document.createElement('a');
+            prevLink.className = 'page-link';
+            prevLink.href = '#';
+            prevLink.textContent = 'Previous';
+            prevLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayResults();
+                }
+            });
+            
+            prevLi.appendChild(prevLink);
+            pagination.appendChild(prevLi);
+            
+            // Page numbers
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // Adjust start page if we're near the end
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageLi = document.createElement('li');
+                pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                
+                const pageLink = document.createElement('a');
+                pageLink.className = 'page-link';
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                pageLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = i;
+                    displayResults();
+                });
+                
+                pageLi.appendChild(pageLink);
+                pagination.appendChild(pageLi);
+            }
+            
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            
+            const nextLink = document.createElement('a');
+            nextLink.className = 'page-link';
+            nextLink.href = '#';
+            nextLink.textContent = 'Next';
+            nextLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayResults();
+                }
+            });
+            
+            nextLi.appendChild(nextLink);
+            pagination.appendChild(nextLi);
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            
+            // Save preference
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            
+            // Update button text
+            darkModeToggle.innerHTML = isDarkMode 
+                ? '<i class="bi bi-sun"></i> Light Mode' 
+                : '<i class="bi bi-moon"></i> Dark Mode';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for dark mode preference
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
+            }
+            
+            // Fetch initial results
+            fetchResults();
+            
+            // Event listeners
+            searchInput.addEventListener('input', filterResults);
+            typeFilter.addEventListener('change', filterResults);
+            sortOrder.addEventListener('change', filterResults);
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+        });
+    </script>
+</body>
+</html>

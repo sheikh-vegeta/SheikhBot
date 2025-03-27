@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://iana.org/_img/2025.01/iana-logo-header.svg",
+    "page_url": "https://iana.org/domains/example",
+    "content_type": "image/svg+xml",
+    "size_bytes": 8007,
+    "last_modified": "Thu, 30 Jan 2025 03:57:07 GMT",
+    "crawler_type": "image",
+    "alt": "Homepage",
+    "title": "",
+    "width": "",
+    "height": "",
+    "loading": "",
+    "tag_type": "img",
+    "hash": "d31cfabf23ea3b074785ad688add7401",
+    "analysis_error": "cannot identify image file <_io.BytesIO object at 0x000001DDE4EE1620>"
+  }
+]

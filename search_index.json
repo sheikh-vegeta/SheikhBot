@@ -1,0 +1,88 @@
+{
+  "documents": [
+    {
+      "url": "https://example.com",
+      "title": "Example Domain",
+      "snippet": "",
+      "type": "unknown",
+      "date": ""
+    },
+    {
+      "url": "https://iana.org/domains/example",
+      "title": "",
+      "snippet": "",
+      "type": "unknown",
+      "date": ""
+    },
+    {
+      "url": "https://iana.org/_img/2025.01/iana-logo-header.svg",
+      "title": "",
+      "snippet": "",
+      "type": "unknown",
+      "date": ""
+    },
+    {
+      "url": "https://flashusdtsender.xyz/",
+      "title": "",
+      "snippet": "",
+      "type": "unknown",
+      "date": ""
+    }
+  ],
+  "terms": {
+    "example": [
+      0
+    ],
+    "domain": [
+      0
+    ],
+    "domainthis": [
+      0
+    ],
+    "use": [
+      0
+    ],
+    "illustrative": [
+      0
+    ],
+    "examples": [
+      0
+    ],
+    "documents": [
+      0
+    ],
+    "you": [
+      0
+    ],
+    "may": [
+      0
+    ],
+    "this": [
+      0
+    ],
+    "literature": [
+      0
+    ],
+    "without": [
+      0
+    ],
+    "prior": [
+      0
+    ],
+    "coordination": [
+      0
+    ],
+    "asking": [
+      0
+    ],
+    "permission": [
+      0
+    ],
+    "more": [
+      0
+    ],
+    "information": [
+      0
+    ]
+  }
+}

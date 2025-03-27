@@ -1,0 +1,60 @@
+
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Central Search Results</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                        .container { max-width: 1200px; margin: 0 auto; }
+                        .result { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+                        .title { font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
+                        .url { color: green; margin-bottom: 10px; }
+                        .snippet { color: #333; }
+                        .meta { color: #666; font-size: 0.8em; margin-top: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>Central Search Results</h1>
+                        <p>Website analysis and SEO insights from Central</p>
+                        <div id="results">
+                            <!-- Results will be inserted here -->
+                        </div>
+                    </div>
+                    <script>
+                    // JavaScript to load and display results
+                    document.addEventListener('DOMContentLoaded', function() {
+                        fetch('search_index.json')
+                            .then(response => response.json())
+                            .then(data => {
+                                const resultsContainer = document.getElementById('results');
+                                
+                                if (data.documents && data.documents.length > 0) {
+                                    data.documents.forEach(doc => {
+                                        const resultDiv = document.createElement('div');
+                                        resultDiv.className = 'result';
+                                        
+                                        resultDiv.innerHTML = `
+                                            <div class="title">${doc.title}</div>
+                                            <div class="url">${doc.url}</div>
+                                            <div class="snippet">${doc.snippet || ''}</div>
+                                            <div class="meta">Type: ${doc.type} | Date: ${doc.date || 'Unknown'}</div>
+                                        `;
+                                        
+                                        resultsContainer.appendChild(resultDiv);
+                                    });
+                                } else {
+                                    resultsContainer.innerHTML = '<p>No results found.</p>';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error loading results:', error);
+                                document.getElementById('results').innerHTML = '<p>Error loading results.</p>';
+                            });
+                    });
+                    </script>
+                </body>
+                </html>
+                

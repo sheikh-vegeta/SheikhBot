@@ -1,0 +1,36 @@
+[
+  {
+    "url": "https://flashusdtsender.xyz/",
+    "depth": 0,
+    "status_code": 200,
+    "content_type": "text/html; charset=utf-8",
+    "crawl_time": "2025-03-27T11:58:58.881450",
+    "size": 6791,
+    "headers": {
+      "Access-Control-Allow-Origin": "*",
+      "Age": "220529",
+      "Cache-Control": "public, max-age=3600, stale-while-revalidate",
+      "Content-Disposition": "inline",
+      "Content-Encoding": "br",
+      "Content-Type": "text/html; charset=utf-8",
+      "Date": "Thu, 27 Mar 2025 11:58:58 GMT",
+      "Etag": "W/\"da47f410ef53c20fed6382f3db3806fd\"",
+      "Server": "Vercel",
+      "Strict-Transport-Security": "max-age=63072000",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "X-Matched-Path": "/",
+      "X-Nextjs-Prerender": "1",
+      "X-Nextjs-Stale-Time": "4294967294",
+      "X-Vercel-Cache": "HIT",
+      "X-Vercel-Id": "cle1::69mwd-1743076738810-77c541e291a5",
+      "X-Xss-Protection": "1; mode=block",
+      "Transfer-Encoding": "chunked"
+    },
+    "title": "",
+    "content": "",
+    "metadata": {},
+    "crawler_type": "desktop",
+    "viewport": "1920x1080"
+  }
+]

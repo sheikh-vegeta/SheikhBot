@@ -11,6 +11,7 @@
     <meta name="theme-color" content="#18212f" media="(prefers-color-scheme: dark)">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="apple-touch-icon" href="assets/sheikh-192.png">
+    <link href="https://fonts.cdnfonts.com/css/li-ador-noirrit?styles=87152" rel="stylesheet">
     <style>
         :root {
             --primary-color: #4a6cf7;
@@ -20,6 +21,7 @@
             --success-color: #28a745;
             --warning-color: #ffc107;
             --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            --font-primary: 'Li Ador Noirrit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
         * {
@@ -29,7 +31,7 @@
         }
         
         body {
-            font-family: var(--font-main);
+            font-family: var(--font-primary);
             line-height: 1.6;
             color: #333;
             background-color: var(--light-color);
@@ -115,7 +117,8 @@
         }
         
         .hero h1 {
-            font-size: 3rem;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
             margin-bottom: 1rem;
         }
         
@@ -381,7 +384,38 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .bn {
+            font-family: var(--font-primary);
+            line-height: 1.8;
+        }
+
+        .en {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Add multilingual support */
+        [lang="bn"] .bn-text {
+            display: block;
+        }
+
+        [lang="bn"] .en-text {
+            display: none;
+        }
+
+        [lang="en"] .bn-text {
+            display: none;
+        }
+
+        [lang="en"] .en-text {
+            display: block;
+        }
     </style>
+
+    <!-- Language metadata -->
+    <link rel="alternate" hreflang="bn" href="?lang=bn">
+    <link rel="alternate" hreflang="en" href="?lang=en">
+    <meta name="language" content="bn_BD">
 </head>
 <body>
     <header>

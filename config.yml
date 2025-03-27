@@ -153,6 +153,12 @@ seo_analysis:
       weight: 5
     structured_data:
       weight: 3
+  multilingual:
+    check_hreflang: true
+    check_language_declaration: true
+    check_content_language: true
+    validate_translations: true
+    language_specific_keywords: true
 
 # Export settings
 export_settings:
@@ -252,4 +258,24 @@ index_settings:
     - title
     - content
     - url
-    - metadata.description 
+    - metadata.description
+
+# Language settings
+language_settings:
+  default_language: "bn"
+  supported_languages:
+    - code: "bn"
+      name: "বাংলা"
+      font: "Li Ador Noirrit"
+      direction: "ltr"
+      
+    - code: "en"
+      name: "English"
+      font: "system-ui"
+      direction: "ltr"
+
+  content_settings:
+    enable_translation: true
+    auto_detect_language: true
+    fallback_language: "en"
+    store_original_text: true

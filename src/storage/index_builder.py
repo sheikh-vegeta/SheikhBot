@@ -7,6 +7,7 @@ import json
 import re
 from typing import Dict, List, Any, Union
 import logging
+from openai import OpenAI
 
 class IndexBuilder:
     """Builds a simple search index for crawled content."""
@@ -40,6 +41,19 @@ class IndexBuilder:
             except ImportError:
                 self.logger.warning("Spacy not installed. NLP features disabled.")
                 self.nlp_enabled = False
+
+        # Initialize NVIDIA AI client
+        self.nvidia_enabled = config.get("nvidia_enabled", False)
+        if self.nvidia_enabled:
+            try:
+                self.nvidia_client = OpenAI(
+                    base_url="https://integrate.api.nvidia.com/v1",
+                    api_key=os.environ.get("NVIDIA_API_KEY")
+                )
+                self.logger.info("NVIDIA AI integration enabled")
+            except Exception as e:
+                self.logger.error(f"Error initializing NVIDIA AI: {str(e)}")
+                self.nvidia_enabled = False
 
         # Initialize structured data extraction
         self.extract_structured = config.get("extract_structured", True)
@@ -102,13 +116,14 @@ class IndexBuilder:
         return tokens
     
     def _process_content(self, text: str, url: str) -> Dict[str, Any]:
-        """Process content using NLP and extract insights."""
+        """Process content using NLP and NVIDIA AI."""
         results = {
             "keywords": [],
             "entities": [],
             "summary": "",
             "language": "",
-            "sentiment": 0
+            "sentiment": 0,
+            "ai_insights": {}
         }
 
         if self.nlp_enabled and self.nlp:
@@ -130,6 +145,36 @@ class IndexBuilder:
                 
             except Exception as e:
                 self.logger.error(f"Error in NLP processing: {str(e)}")
+
+        # Use NVIDIA AI for enhanced analysis
+        if self.nvidia_enabled:
+            try:
+                prompt = f"""Analyze this content and provide:
+                1. Main topics
+                2. Key insights
+                3. Content quality score (1-10)
+                4. SEO recommendations
+                
+                Content: {text[:2000]}  # Truncate to avoid token limits
+                """
+                
+                completion = self.nvidia_client.chat.completions.create(
+                    model="nv-mistralai/mistral-nemo-12b-instruct",
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.2,
+                    top_p=0.7,
+                    max_tokens=1024
+                )
+                
+                if completion.choices:
+                    results["ai_insights"] = {
+                        "analysis": completion.choices[0].message.content,
+                        "model": "mistral-nemo-12b",
+                        "timestamp": datetime.now().isoformat()
+                    }
+                    
+            except Exception as e:
+                self.logger.error(f"Error in NVIDIA AI analysis: {str(e)}")
 
         return results
 

@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Search - Website Discovery Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --primary-dark: #3a56c6;
+            --background-light: #f8f9fa;
+            --background-dark: #212529;
+            --text-light: #212529;
+            --text-dark: #f8f9fa;
+            --card-light: #ffffff;
+            --card-dark: #2a2e33;
+        }
+        
+        body {
+            transition: background-color 0.3s ease;
+            padding-top: 80px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
+        
+        .dark-mode .card {
+            background-color: var(--card-dark);
+            color: var(--text-dark);
+            border-color: #444;
+        }
+        
+        .dark-mode .navbar {
+            background-color: #1a1d20 !important;
+        }
+        
+        .dark-mode .form-control,
+        .dark-mode .form-select {
+            background-color: #333;
+            color: #fff;
+            border-color: #444;
+        }
+        
+        .dark-mode .form-control:focus,
+        .dark-mode .form-select:focus {
+            background-color: #3a3a3a;
+            color: #fff;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .brand-dot {
+            color: var(--primary-color);
+        }
+        
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            border-radius: 30px;
+            padding-left: 20px;
+            padding-right: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            height: 50px;
+        }
+        
+        .search-btn {
+            border-radius: 30px;
+            padding: 10px 24px;
+            font-weight: 600;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+        }
+        
+        .search-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .result-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-section {
+            background-color: rgba(0, 0, 0, 0.02);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dark-mode .filter-section {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .highlight {
+            background-color: rgba(255, 255, 0, 0.2);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .dark-mode .highlight {
+            background-color: rgba(255, 255, 0, 0.15);
+            color: white;
+        }
+        
+        .stats-container {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .stats-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .pagination-container {
+            margin-top: auto;
+            margin-bottom: 2rem;
+        }
+        
+        .page-link {
+            color: var(--primary-color);
+            border-radius: 5px;
+            margin: 0 2px;
+        }
+        
+        .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .dark-mode .page-link {
+            background-color: var(--card-dark);
+            color: white;
+            border-color: #444;
+        }
+        
+        .dark-mode .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .dark-mode .page-item.disabled .page-link {
+            background-color: #333;
+            color: #888;
+            border-color: #444;
+        }
+        
+        footer {
+            margin-top: auto;
+            padding: 1.5rem 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode footer {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .content-snippet {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+        
+        .url-text {
+            color: #198754;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .dark-mode .url-text {
+            color: #5cb85c;
+        }
+        
+        .color-mode-switch {
+            cursor: pointer;
+            font-size: 1.3rem;
+        }
+        
+        @media (max-width: 767.98px) {
+            .stats-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-search-heart text-primary"></i>
+                Central<span class="brand-dot"> Search</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="search.html">Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stats.html">Statistics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <div class="color-mode-switch" id="color-mode-toggle">
+                            <i class="bi bi-moon-fill"></i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-4">
+        <!-- Search Section -->
+        <div class="search-container mb-5">
+            <div class="row justify-content-center">
+                <div class="col-md-12 text-center mb-4">
+                    <h1>Search Your Website Content</h1>
+                    <p class="lead text-muted">Find optimization opportunities and analyze your site's discoverability</p>
+                </div>
+                <div class="col-md-12">
+                    <form id="search-form">
+                        <div class="input-group mb-3">
+                            <input type="text" id="search-input" class="form-control search-input" placeholder="Enter keywords to find optimization opportunities..." aria-label="Search">
+                            <button class="btn search-btn" type="submit">
+                                <i class="bi bi-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-container">
+            <div class="row">
+                <div class="col-md-3 col-6 mb-md-0">
+                    <div class="stats-card">
+                        <div class="stats-number" id="pages-count">0</div>
+                        <div class="stats-label">Pages Indexed</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-md-0">
+                    <div class="stats-card">
+                        <div class="stats-number" id="seo-score">0</div>
+                        <div class="stats-label">Average SEO Score</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-number" id="issues-count">0</div>
+                        <div class="stats-label">Issues Found</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-number" id="last-updated">-</div>
+                        <div class="stats-label">Last Updated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="type-filter" class="form-label">Content Type</label>
+                    <select class="form-select" id="type-filter" aria-label="Filter by content type">
+                        <option value="all" selected>All Types</option>
+                        <option value="desktop">Desktop View</option>
+                        <option value="mobile">Mobile View</option>
+                        <option value="image">Images</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="issue-filter" class="form-label">SEO Issues</label>
+                    <select class="form-select" id="issue-filter" aria-label="Filter by SEO issues">
+                        <option value="all" selected>All Pages</option>
+                        <option value="issue">Critical Issues</option>
+                        <option value="improvement">Warnings</option>
+                        <option value="good">Good Practices</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="sort-order" class="form-label">Sort By</label>
+                    <select class="form-select" id="sort-order" aria-label="Sort results">
+                        <option value="seo-score-asc">SEO Score (Lowest First)</option>
+                        <option value="seo-score-desc">SEO Score (Highest First)</option>
+                        <option value="date-desc" selected>Date (Newest First)</option>
+                        <option value="date-asc">Date (Oldest First)</option>
+                        <option value="title-asc">Title (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div id="results-container">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results Template -->
+        <template id="no-results-template">
+            <div class="text-center py-5">
+                <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+                <h3 class="mt-3">No results found</h3>
+                <p class="text-muted">Try different keywords or adjust your filters</p>
+            </div>
+        </template>
+
+        <!-- Result Card Template -->
+        <template id="result-card-template">
+            <div class="card result-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="seo-score"></span>
+                            <h5 class="card-title result-title mb-0"></h5>
+                        </div>
+                        <span class="badge rounded-pill result-type"></span>
+                    </div>
+                    <p class="card-text url-text result-url"></p>
+                    <p class="card-text content-snippet result-snippet"></p>
+                    
+                    <div class="seo-issues mt-3">
+                        <h6 class="mb-2">SEO Analysis:</h6>
+                        <div class="seo-issue-list">
+                            <!-- SEO issues will be inserted here -->
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted result-date"></small>
+                        <a href="#" class="btn btn-sm btn-primary result-link">View Full Analysis</a>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <nav aria-label="Search results pages">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2023 Central Search. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="https://github.com/yourusername/central" class="text-decoration-none text-muted me-3">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                    <a href="#" class="text-decoration-none text-muted">
+                        <i class="bi bi-question-circle"></i> Help
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample data for demonstration - would be replaced with actual data from Central Search
+        const sampleData = {
+            stats: {
+                pages: 152,
+                seoScore: 78,
+                issues: 47,
+                lastUpdated: "2023-10-15"
+            },
+            domains: [
+                "example.com",
+                "example.org"
+            ],
+            results: [
+                {
+                    id: 1,
+                    title: "Homepage",
+                    url: "https://example.com/",
+                    snippet: "Your homepage is the first impression for many visitors. Make sure it clearly communicates your value proposition and has strong <span class='highlight'>search</span> appeal.",
+                    date: "2023-10-12",
+                    type: "desktop",
+                    domain: "example.com",
+                    seoScore: 86,
+                    issues: [
+                        { type: "good", message: "Meta title is well-optimized at 52 characters" },
+                        { type: "good", message: "SSL certificate is valid and properly configured" },
+                        { type: "improvement", message: "Meta description is a bit short (96 characters). Consider expanding to 120-160 characters" }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "About Us",
+                    url: "https://example.com/about",
+                    snippet: "The About Us page has multiple opportunities for improving <span class='highlight'>search</span> visibility. Consider adding more specific content about your company's expertise.",
+                    date: "2023-10-10",
+                    type: "desktop",
+                    domain: "example.com",
+                    seoScore: 62,
+                    issues: [
+                        { type: "issue", message: "Meta description is missing" },
+                        { type: "issue", message: "H1 heading is not clearly defined" },
+                        { type: "improvement", message: "Content is somewhat thin (285 words). Consider expanding to at least 300 words" }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "Product Page",
+                    url: "https://example.com/products/widget",
+                    snippet: "Mobile version of this page has rendering issues. Search engines prioritizing mobile-first indexing may have trouble understanding your content.",
+                    date: "2023-10-05",
+                    type: "mobile",
+                    domain: "example.com",
+                    seoScore: 45,
+                    issues: [
+                        { type: "issue", message: "Content appears different on mobile vs desktop" },
+                        { type: "issue", message: "Mobile viewport not properly configured" },
+                        { type: "issue", message: "Touch elements too close together" }
+                    ]
+                },
+                {
+                    id: 4,
+                    title: "Blog Article",
+                    url: "https://example.com/blog/seo-tips",
+                    snippet: "This page ranks well for several keywords but has unoptimized images. Adding proper alt text could improve overall <span class='highlight'>search</span> performance.",
+                    date: "2023-10-01",
+                    type: "image",
+                    domain: "example.com",
+                    seoScore: 72,
+                    issues: [
+                        { type: "issue", message: "5 images missing alt text" },
+                        { type: "improvement", message: "Images are not properly sized for web" },
+                        { type: "good", message: "Good keyword usage in headings and content" }
+                    ]
+                },
+                {
+                    id: 5,
+                    title: "Services",
+                    url: "https://example.org/services",
+                    snippet: "Schema markup implementation is incomplete. Add proper service schema to help <span class='highlight'>search</span> engines understand your offerings better.",
+                    date: "2023-09-28",
+                    type: "desktop",
+                    domain: "example.org",
+                    seoScore: 67,
+                    issues: [
+                        { type: "improvement", message: "Incomplete schema markup" },
+                        { type: "improvement", message: "Consider adding FAQ schema for the questions section" },
+                        { type: "good", message: "Good internal linking structure" }
+                    ]
+                }
+            ]
+        };
+
+        // Load stats
+        document.getElementById('pages-count').textContent = sampleData.stats.pages.toLocaleString();
+        document.getElementById('seo-score').textContent = sampleData.stats.seoScore;
+        document.getElementById('issues-count').textContent = sampleData.stats.issues;
+        document.getElementById('last-updated').textContent = sampleData.stats.lastUpdated;
+
+        // Populate domain filter
+        const domainFilter = document.getElementById('domain-filter');
+        sampleData.domains.forEach(domain => {
+            const option = document.createElement('option');
+            option.value = domain;
+            option.textContent = domain;
+            domainFilter.appendChild(option);
+        });
+
+        // Dark mode toggle
+        const colorModeToggle = document.getElementById('color-mode-toggle');
+        const body = document.body;
+
+        // Check for saved preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            enableDarkMode();
+        }
+
+        colorModeToggle.addEventListener('click', () => {
+            if (body.classList.contains('dark-mode')) {
+                disableDarkMode();
+            } else {
+                enableDarkMode();
+            }
+        });
+
+        function enableDarkMode() {
+            body.classList.add('dark-mode');
+            colorModeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+            localStorage.setItem('darkMode', 'enabled');
+        }
+
+        function disableDarkMode() {
+            body.classList.remove('dark-mode');
+            colorModeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
+            localStorage.setItem('darkMode', 'disabled');
+        }
+
+        // Handle search form submission
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+        const resultsContainer = document.getElementById('results-container');
+        const resultCardTemplate = document.getElementById('result-card-template');
+        const noResultsTemplate = document.getElementById('no-results-template');
+        const typeFilter = document.getElementById('type-filter');
+        const issueFilter = document.getElementById('issue-filter');
+        const sortOrder = document.getElementById('sort-order');
+
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            
+            if (query) {
+                performSearch(query);
+            }
+        });
+
+        // Handle filter changes
+        typeFilter.addEventListener('change', filterResults);
+        issueFilter.addEventListener('change', filterResults);
+        sortOrder.addEventListener('change', sortResults);
+
+        // Initial search results (show all for demo)
+        window.addEventListener('DOMContentLoaded', () => {
+            displayResults(sampleData.results);
+        });
+
+        function performSearch(query) {
+            // In a real implementation, this would call the backend API
+            // For demo, we'll filter the sample data
+            const filteredResults = sampleData.results.filter(result => {
+                const titleMatch = result.title.toLowerCase().includes(query.toLowerCase());
+                const snippetMatch = result.snippet.toLowerCase().includes(query.toLowerCase());
+                return titleMatch || snippetMatch;
+            });
+            
+            // Highlight the search term in results
+            const highlightedResults = filteredResults.map(result => {
+                const highlighted = {...result};
+                
+                // Create a regex that matches the query with word boundaries
+                const regex = new RegExp(`\\b(${query})\\b`, 'gi');
+                
+                // Highlight in title if not already in a highlight span
+                highlighted.title = highlighted.title.replace(regex, '<span class="highlight">$1</span>');
+                
+                // For snippet, we don't add highlighting as it should already be there from the backend
+                
+                return highlighted;
+            });
+            
+            displayResults(highlightedResults);
+        }
+
+        function displayResults(results) {
+            resultsContainer.innerHTML = '';
+            
+            if (results.length === 0) {
+                resultsContainer.appendChild(noResultsTemplate.content.cloneNode(true));
+                return;
+            }
+            
+            results.forEach(result => {
+                const resultCard = resultCardTemplate.content.cloneNode(true);
+                
+                // Set SEO score and apply appropriate class
+                const scoreElement = resultCard.querySelector('.seo-score');
+                scoreElement.textContent = result.seoScore;
+                if (result.seoScore >= 80) {
+                    scoreElement.classList.add('seo-score-good');
+                } else if (result.seoScore >= 60) {
+                    scoreElement.classList.add('seo-score-average');
+                } else {
+                    scoreElement.classList.add('seo-score-poor');
+                }
+                
+                // Set card content
+                resultCard.querySelector('.result-title').innerHTML = result.title;
+                resultCard.querySelector('.result-url').textContent = result.url;
+                resultCard.querySelector('.result-url').href = result.url;
+                resultCard.querySelector('.result-snippet').innerHTML = result.snippet;
+                resultCard.querySelector('.result-date').textContent = result.date;
+                resultCard.querySelector('.result-link').href = result.url;
+                
+                // Set SEO issues
+                const issuesList = resultCard.querySelector('.seo-issue-list');
+                if (result.issues && result.issues.length > 0) {
+                    result.issues.forEach(issue => {
+                        const issueElement = document.createElement('div');
+                        issueElement.className = `seo-${issue.type}`;
+                        issueElement.innerHTML = issue.message;
+                        issuesList.appendChild(issueElement);
+                    });
+                } else {
+                    issuesList.innerHTML = '<p>No issues detected</p>';
+                }
+                
+                // Set badge color based on type
+                const badge = resultCard.querySelector('.result-type');
+                badge.textContent = result.type;
+                
+                switch (result.type) {
+                    case 'desktop':
+                        badge.classList.add('bg-primary');
+                        break;
+                    case 'mobile':
+                        badge.classList.add('bg-success');
+                        break;
+                    case 'image':
+                        badge.classList.add('bg-info');
+                        break;
+                    default:
+                        badge.classList.add('bg-secondary');
+                }
+                
+                resultsContainer.appendChild(resultCard);
+            });
+            
+            // Update pagination
+            updatePagination(results.length, 1);
+        }
+
+        function filterResults() {
+            const typeValue = typeFilter.value;
+            const issueValue = issueFilter.value;
+            
+            let filteredResults = sampleData.results;
+            
+            // Filter by type
+            if (typeValue !== 'all') {
+                filteredResults = filteredResults.filter(result => result.type === typeValue);
+            }
+            
+            // Filter by issue type
+            if (issueValue !== 'all') {
+                filteredResults = filteredResults.filter(result => {
+                    if (!result.issues) return false;
+                    return result.issues.some(issue => issue.type === issueValue);
+                });
+            }
+            
+            // Apply current search if any
+            const query = searchInput.value.trim();
+            if (query) {
+                filteredResults = filteredResults.filter(result => {
+                    const titleMatch = result.title.toLowerCase().includes(query.toLowerCase());
+                    const snippetMatch = result.snippet.toLowerCase().includes(query.toLowerCase());
+                    return titleMatch || snippetMatch;
+                });
+            }
+            
+            displayResults(filteredResults);
+        }
+
+        function sortResults() {
+            const sortValue = sortOrder.value;
+            let sortedResults = [...sampleData.results];
+            
+            switch (sortValue) {
+                case 'date-desc':
+                    sortedResults.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+                case 'date-asc':
+                    sortedResults.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    break;
+                case 'title-asc':
+                    sortedResults.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'title-desc':
+                    sortedResults.sort((a, b) => b.title.localeCompare(a.title));
+                    break;
+                // For relevance, we'd use the backend's ranking in a real implementation
+                case 'relevance':
+                default:
+                    // Use default order for demo
+                    break;
+            }
+            
+            // Apply current filters
+            filterResults();
+        }
+
+        function updatePagination(totalResults, currentPage) {
+            const pagination = document.getElementById('pagination');
+            const resultsPerPage = 10;
+            const totalPages = Math.ceil(totalResults / resultsPerPage);
+            
+            pagination.innerHTML = '';
+            
+            // Previous button
+            const prevItem = document.createElement('li');
+            prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            
+            const prevLink = document.createElement('a');
+            prevLink.className = 'page-link';
+            prevLink.href = '#';
+            prevLink.textContent = 'Previous';
+            if (currentPage > 1) {
+                prevLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // In a real implementation, navigate to previous page
+                });
+            } else {
+                prevLink.tabIndex = -1;
+                prevLink.setAttribute('aria-disabled', 'true');
+            }
+            
+            prevItem.appendChild(prevLink);
+            pagination.appendChild(prevItem);
+            
+            // Page numbers
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                
+                const pageLink = document.createElement('a');
+                pageLink.className = 'page-link';
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                if (i === currentPage) {
+                    pageLink.setAttribute('aria-current', 'page');
+                } else {
+                    pageLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        // In a real implementation, navigate to the selected page
+                    });
+                }
+                
+                pageItem.appendChild(pageLink);
+                pagination.appendChild(pageItem);
+            }
+            
+            // Next button
+            const nextItem = document.createElement('li');
+            nextItem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            
+            const nextLink = document.createElement('a');
+            nextLink.className = 'page-link';
+            nextLink.href = '#';
+            nextLink.textContent = 'Next';
+            if (currentPage < totalPages) {
+                nextLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // In a real implementation, navigate to next page
+                });
+            } else {
+                nextLink.tabIndex = -1;
+                nextLink.setAttribute('aria-disabled', 'true');
+            }
+            
+            nextItem.appendChild(nextLink);
+            pagination.appendChild(nextItem);
+        }
+    </script>
+</body>
+</html> 

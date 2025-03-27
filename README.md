@@ -1,104 +1,129 @@
-# SheikhBot
+# Central Search
 
-SheikhBot is a web crawler inspired by Googlebot, designed to gather information from the web and build a searchable index. It is developed by Likhon Sheikh to efficiently crawl websites and extract valuable data.
+A powerful web crawler and SEO analysis tool designed to help make your website discoverable to Search. Central (formerly Sheikh Webmasters) provides advanced crawling capabilities, content extraction, SEO insights, and a beautiful interface for improving your site's search presence.
 
 ## Features
 
-- **Multi-Platform Crawling**: Specialized crawlers for desktop, mobile, news, images, and videos
-- **Configurable Crawl Depth**: Control how deep the crawler should go
-- **Rate Limiting**: Respectful crawling with configurable delays
-- **Data Exporting**: Export crawled data in multiple formats (JSON, CSV)
-- **Search Index**: Build a searchable index from crawled content
-- **GitHub Pages Integration**: View crawl results on GitHub Pages
-- **Automated Workflows**: GitHub Actions for scheduled crawling
-
-## Project Structure
-
-```
-sheikhbot/
-├── .github/
-│   └── workflows/       # GitHub Actions workflow files
-├── src/
-│   ├── crawlers/        # Specialized crawlers
-│   ├── parsers/         # Content parsers
-│   ├── storage/         # Data storage modules
-│   └── utils/           # Utility functions
-├── data/                # Crawled data output
-├── docs/                # Documentation and GitHub Pages
-├── tests/               # Unit and integration tests
-├── config.yml           # Configuration file
-├── requirements.txt     # Python dependencies
-└── README.md            # Project documentation
-```
+- **SEO Analysis**: Get detailed insights on title tags, meta descriptions, headings, content quality, and more
+- **Multi-Platform Testing**: Crawl your website from desktop, mobile, and image search perspectives
+- **JavaScript Rendering**: Test how search engines see your JavaScript-heavy pages
+- **Robots.txt Compliance**: Verify your robots.txt is correctly configured
+- **HTTP Caching**: Check your site's ETag and If-Modified-Since headers for efficient crawling
+- **Structured Data Analysis**: Validate schema markup and structured data
+- **Content Optimization**: Get recommendations for improving content quality and relevance
+- **Full-Text Search**: Index and search your site content to find optimization opportunities
+- **Beautiful Reports**: Modern interface for browsing findings and recommendations
+- **Automated Monitoring**: Schedule regular crawls with GitHub Actions
 
 ## Installation
 
-1. Clone this repository:
-   ```
-   git clone https://github.com/yourusername/sheikhbot.git
-   cd sheikhbot
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/central.git
+   cd central
    ```
 
-2. Install the required dependencies:
-   ```
+2. Install dependencies:
+   ```bash
    pip install -r requirements.txt
    ```
 
+3. Configure the crawler by editing `config.yml`
+
 ## Usage
 
-### Basic Usage
+### Basic SEO Analysis
 
-```python
-from sheikhbot import SheikhBot
+To analyze a website for SEO opportunities, run:
 
-# Initialize the crawler
-bot = SheikhBot(config_file="config.yml")
-
-# Start crawling
-bot.crawl("https://example.com")
-
-# Export data
-bot.export_data("output.json")
+```bash
+python main.py crawl https://example.com
 ```
 
-### Configuration
+The results will be saved to the configured output directory (default: `data/`).
 
-Edit the `config.yml` file to customize the crawler's behavior:
+### Configuration Options
 
-```yaml
-crawl_settings:
-  user_agent: "SheikhBot/1.0"
-  max_depth: 3
-  delay: 1.0
-  respect_robots_txt: true
+Edit `config.yml` to customize crawling behavior:
 
-specialized_crawlers:
-  desktop: true
-  mobile: true
-  news: false
-  images: true
-  videos: false
+- Set crawl depth, delay, and timeouts
+- Configure specialized crawlers (desktop, mobile, image)
+- Define content extraction selectors
+- Adjust SEO analysis parameters
+- Configure storage and export settings
 
-export_settings:
-  format: "json"
-  pretty_print: true
+### Advanced Commands
+
+View all available commands:
+
+```bash
+python main.py --help
 ```
 
-## GitHub Actions Integration
+Export analysis data:
 
-SheikhBot uses GitHub Actions for automated crawling and index building. The crawled data is automatically published to GitHub Pages.
+```bash
+python main.py export --output seo-report.json --format json
+```
 
-To set up your own scheduled crawling:
+Generate SEO reports for viewing:
+
+```bash
+python main.py ghpages --directory docs
+```
+
+### Automated Monitoring with GitHub Actions
+
+For regular SEO monitoring:
 
 1. Fork this repository
-2. Edit the URLs in `.github/workflows/crawl.yml`
-3. Configure GitHub Pages in your repository settings
-4. The results will be available at `https://yourusername.github.io/sheikhbot`
+2. Enable GitHub Actions
+3. Configure the workflow in `.github/workflows/crawl.yml`
+4. Push changes to your repository
+5. Access your SEO reports on GitHub Pages
+
+## Web Interface
+
+After analyzing your site, you can browse the results using the built-in web interface:
+
+1. Generate the report site:
+   ```bash
+   python main.py ghpages
+   ```
+
+2. Open `docs/index.html` in your browser or deploy to GitHub Pages
+
+Features:
+- SEO scores and recommendations
+- Content analysis with improvement suggestions
+- Mobile-friendliness metrics
+- Structured data validation
+- Dark mode support
+- Mobile-friendly interface
+
+## SEO Best Practices
+
+Central Search helps you implement these critical SEO best practices:
+
+- Optimize title tags and meta descriptions
+- Create a logical heading structure (H1, H2, H3)
+- Ensure content meets quality thresholds
+- Optimize for mobile devices
+- Implement schema markup correctly
+- Ensure proper internal linking
+- Optimize images with alt text
+- Improve page load speed
+
+## Requirements
+
+- Python 3.8+
+- Chrome/Chromium (for JavaScript rendering)
+- Dependencies listed in requirements.txt
 
 ## License
 
-MIT
+MIT License
 
-## Author
+## Contributing
 
-Likhon Sheikh 
+Contributions are welcome! Please feel free to submit a Pull Request. 

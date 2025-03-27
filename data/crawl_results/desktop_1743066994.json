@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://example.com",
+    "depth": 0,
+    "status_code": 200,
+    "content_type": "text/html",
+    "crawl_time": "2025-03-27T15:16:34.923518",
+    "size": 1256,
+    "headers": {
+      "Accept-Ranges": "bytes",
+      "Content-Type": "text/html",
+      "ETag": "\"84238dfc8092e5d9c0dac8ef93371a07:1736799080.121134\"",
+      "Last-Modified": "Mon, 13 Jan 2025 20:11:20 GMT",
+      "Vary": "Accept-Encoding",
+      "Content-Encoding": "gzip",
+      "Cache-Control": "max-age=1493",
+      "Date": "Thu, 27 Mar 2025 09:16:11 GMT",
+      "Alt-Svc": "h3=\":443\"; ma=93600,h3-29=\":443\"; ma=93600,quic=\":443\"; ma=93600; v=\"43\"",
+      "Content-Length": "648",
+      "Connection": "keep-alive"
+    },
+    "error": "Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?",
+    "crawler_type": "desktop",
+    "viewport": "1920x1080"
+  }
+]

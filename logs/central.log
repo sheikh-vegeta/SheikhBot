@@ -1,0 +1,96 @@
+2025-03-27 15:15:49,328 - sheikhbot - INFO - Initializing SheikhBot v1.0.0
+2025-03-27 15:16:31,984 - sheikhbot - INFO - Initializing SheikhBot v1.0.0
+2025-03-27 15:16:31,985 - sheikhbot - INFO - Initializing file storage
+2025-03-27 15:16:31,986 - sheikhbot - INFO - Desktop crawler initialized
+2025-03-27 15:16:31,986 - sheikhbot - INFO - Mobile crawler initialized
+2025-03-27 15:16:31,986 - sheikhbot - INFO - Image crawler initialized
+2025-03-27 15:16:31,986 - sheikhbot - INFO - SheikhBot initialized successfully
+2025-03-27 15:16:31,987 - sheikhbot - INFO - Starting crawl with 1 seed URLs
+2025-03-27 15:16:31,987 - sheikhbot - INFO - Crawling https://example.com (example.com)
+2025-03-27 15:16:31,987 - sheikhbot - INFO - Using desktop crawler for https://example.com
+2025-03-27 15:16:31,987 - sheikhbot - INFO - Starting crawl of https://example.com with max depth 3
+2025-03-27 15:16:31,988 - sheikhbot - INFO - Fetching robots.txt from https://example.com/robots.txt
+2025-03-27 15:16:33,007 - sheikhbot - INFO - No robots.txt found at https://example.com/robots.txt (404)
+2025-03-27 15:16:34,923 - sheikhbot - ERROR - Error processing page https://example.com: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:34,923 - sheikhbot - ERROR - Error in desktop-specific processing for https://example.com: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:34,923 - sheikhbot - ERROR - Error extracting links from https://example.com: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:34,924 - sheikhbot - INFO - Crawl completed: 1 pages crawled, 0 URLs discovered, 0 errors, 2.94 seconds
+2025-03-27 15:16:34,924 - sheikhbot.storage.file - INFO - Data stored to data/crawl_results\desktop_1743066994.json
+2025-03-27 15:16:34,924 - sheikhbot - ERROR - Error crawling https://example.com with desktop crawler: 'index_settings'
+2025-03-27 15:16:34,924 - sheikhbot - INFO - Using mobile crawler for https://example.com
+2025-03-27 15:16:34,924 - sheikhbot - INFO - Starting crawl of https://example.com with max depth 3
+2025-03-27 15:16:34,925 - sheikhbot - INFO - Fetching robots.txt from https://example.com/robots.txt
+2025-03-27 15:16:35,871 - sheikhbot - INFO - No robots.txt found at https://example.com/robots.txt (404)
+2025-03-27 15:16:38,019 - sheikhbot - ERROR - Error processing page https://example.com: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:38,019 - sheikhbot - ERROR - Error in mobile-specific processing for https://example.com: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:38,020 - sheikhbot - ERROR - Error extracting links from https://example.com: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:38,020 - sheikhbot - INFO - Crawl completed: 1 pages crawled, 0 URLs discovered, 0 errors, 3.10 seconds
+2025-03-27 15:16:38,021 - sheikhbot.storage.file - INFO - Data stored to data/crawl_results\mobile_1743066998.json
+2025-03-27 15:16:38,021 - sheikhbot - ERROR - Error crawling https://example.com with mobile crawler: 'index_settings'
+2025-03-27 15:16:38,021 - sheikhbot - INFO - Using images crawler for https://example.com
+2025-03-27 15:16:38,021 - sheikhbot - INFO - Starting crawl of https://example.com with max depth 3
+2025-03-27 15:16:38,021 - sheikhbot - INFO - Fetching robots.txt from https://example.com/robots.txt
+2025-03-27 15:16:38,982 - sheikhbot - INFO - No robots.txt found at https://example.com/robots.txt (404)
+2025-03-27 15:16:41,038 - sheikhbot - ERROR - Error processing page https://example.com: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:41,039 - sheikhbot - ERROR - Error extracting links from https://example.com: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:41,039 - sheikhbot - INFO - Crawl completed: 1 pages crawled, 0 URLs discovered, 0 errors, 3.02 seconds
+2025-03-27 15:16:41,039 - sheikhbot - INFO - Extracting images from https://example.com
+2025-03-27 15:16:41,981 - sheikhbot - ERROR - Error parsing HTML for images: Couldn't find a tree builder with the features you requested: lxml. Do you need to install a parser library?
+2025-03-27 15:16:41,982 - sheikhbot - INFO - Extracted 0 images in total
+2025-03-27 15:16:41,982 - sheikhbot - ERROR - Error crawling https://example.com with images crawler: 'index_settings'
+2025-03-27 15:16:41,982 - sheikhbot - INFO - Crawl completed in 10.00 seconds
+2025-03-27 15:16:41,982 - sheikhbot - INFO - URLs crawled: 0
+2025-03-27 15:16:41,982 - sheikhbot - INFO - Pages indexed: 0
+2025-03-27 15:16:41,983 - sheikhbot - INFO - Errors: 3
+2025-03-27 15:16:41,983 - sheikhbot.storage.file - INFO - Crawl stats stored to data/crawl_results\stats_1743067001.json
+2025-03-27 15:16:41,984 - sheikhbot - INFO - Building GitHub Pages site
+2025-03-27 15:16:41,984 - sheikhbot - ERROR - Error building GitHub Pages site: 'index_template_path'
+2025-03-27 15:16:41,984 - sheikhbot - INFO - Exporting data to data\export_1743067001.json
+2025-03-27 15:16:41,985 - sheikhbot - ERROR - Error exporting data: 'FileStorage' object has no attribute 'export'
+2025-03-27 15:18:41,001 - sheikhbot - INFO - Initializing SheikhBot v1.0.0
+2025-03-27 15:18:41,001 - sheikhbot - INFO - Initializing file storage
+2025-03-27 15:18:41,002 - sheikhbot - INFO - Desktop crawler initialized
+2025-03-27 15:18:41,002 - sheikhbot - INFO - Mobile crawler initialized
+2025-03-27 15:18:41,002 - sheikhbot - INFO - Image crawler initialized
+2025-03-27 15:18:41,002 - sheikhbot - INFO - SheikhBot initialized successfully
+2025-03-27 15:18:41,003 - sheikhbot - INFO - Starting crawl with 1 seed URLs
+2025-03-27 15:18:41,003 - sheikhbot - INFO - Crawling https://example.com (example.com)
+2025-03-27 15:18:41,003 - sheikhbot - INFO - Using desktop crawler for https://example.com
+2025-03-27 15:18:41,003 - sheikhbot - INFO - Starting crawl of https://example.com with max depth 3
+2025-03-27 15:18:41,003 - sheikhbot - INFO - Fetching robots.txt from https://example.com/robots.txt
+2025-03-27 15:18:41,975 - sheikhbot - INFO - No robots.txt found at https://example.com/robots.txt (404)
+2025-03-27 15:18:48,973 - sheikhbot - INFO - Crawl completed: 2 pages crawled, 1 URLs discovered, 0 errors, 7.97 seconds
+2025-03-27 15:18:48,974 - sheikhbot.storage.file - INFO - Data stored to data/crawl_results\desktop_1743067128.json
+2025-03-27 15:18:48,974 - sheikhbot.storage.indexbuilder - INFO - Index saved with 2 documents
+2025-03-27 15:18:48,974 - sheikhbot - INFO - Using mobile crawler for https://example.com
+2025-03-27 15:18:48,974 - sheikhbot - INFO - Starting crawl of https://example.com with max depth 3
+2025-03-27 15:18:48,975 - sheikhbot - INFO - Fetching robots.txt from https://example.com/robots.txt
+2025-03-27 15:18:49,933 - sheikhbot - INFO - No robots.txt found at https://example.com/robots.txt (404)
+2025-03-27 15:18:55,310 - sheikhbot - INFO - Crawl completed: 2 pages crawled, 1 URLs discovered, 0 errors, 6.34 seconds
+2025-03-27 15:18:55,310 - sheikhbot.storage.file - INFO - Data stored to data/crawl_results\mobile_1743067135.json
+2025-03-27 15:18:55,311 - sheikhbot.storage.indexbuilder - INFO - Index saved with 2 documents
+2025-03-27 15:18:55,311 - sheikhbot - INFO - Using images crawler for https://example.com
+2025-03-27 15:18:55,311 - sheikhbot - INFO - Starting crawl of https://example.com with max depth 3
+2025-03-27 15:18:55,311 - sheikhbot - INFO - Fetching robots.txt from https://example.com/robots.txt
+2025-03-27 15:18:56,262 - sheikhbot - INFO - No robots.txt found at https://example.com/robots.txt (404)
+2025-03-27 15:19:07,022 - sheikhbot - INFO - Crawl completed: 2 pages crawled, 1 URLs discovered, 0 errors, 11.71 seconds
+2025-03-27 15:19:07,023 - sheikhbot - INFO - Extracting images from https://example.com
+2025-03-27 15:19:07,973 - sheikhbot - ERROR - Error parsing HTML for images: Tag.find() got multiple values for argument 'name'
+2025-03-27 15:19:07,973 - sheikhbot - INFO - Extracting images from https://iana.org/domains/example
+2025-03-27 15:19:12,246 - sheikhbot - ERROR - Error parsing HTML for images: Tag.find() got multiple values for argument 'name'
+2025-03-27 15:19:12,247 - sheikhbot - INFO - Fetching image: https://iana.org/_img/2025.01/iana-logo-header.svg
+2025-03-27 15:19:15,200 - sheikhbot - ERROR - Error analyzing image https://iana.org/_img/2025.01/iana-logo-header.svg: cannot identify image file <_io.BytesIO object at 0x000001DDE4EE1620>
+2025-03-27 15:19:15,200 - sheikhbot - INFO - Extracted 1 images in total
+2025-03-27 15:19:15,201 - sheikhbot.storage.file - INFO - Data stored to data/crawl_results\images_1743067155.json
+2025-03-27 15:19:15,202 - sheikhbot.storage.indexbuilder - INFO - Index saved with 3 documents
+2025-03-27 15:19:15,202 - sheikhbot - INFO - Crawl completed in 34.20 seconds
+2025-03-27 15:19:15,202 - sheikhbot - INFO - URLs crawled: 3
+2025-03-27 15:19:15,202 - sheikhbot - INFO - Pages indexed: 5
+2025-03-27 15:19:15,203 - sheikhbot - INFO - Errors: 0
+2025-03-27 15:19:15,203 - sheikhbot.storage.file - INFO - Crawl stats stored to data/crawl_results\stats_1743067155.json
+2025-03-27 15:19:15,203 - sheikhbot - INFO - Building GitHub Pages site
+2025-03-27 15:19:15,204 - sheikhbot - WARNING - Template templates\index.html not found, using default HTML
+2025-03-27 15:19:15,205 - sheikhbot - INFO - Copied search index to docs\search_index.json
+2025-03-27 15:19:15,206 - sheikhbot - INFO - GitHub Pages site built successfully in docs
+2025-03-27 15:19:15,206 - sheikhbot - INFO - Exporting data to data\export_1743067155.json
+2025-03-27 15:19:15,208 - sheikhbot - INFO - Data exported to data\export_1743067155.json

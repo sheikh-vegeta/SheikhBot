@@ -5,6 +5,7 @@ SheikhBot - Main crawler class that orchestrates specialized crawlers
 import os
 import time
 import yaml
+import json
 from typing import List, Dict, Any, Optional, Union
 import logging
 
@@ -18,8 +19,6 @@ from .base_crawler import BaseCrawler
 from .desktop_crawler import DesktopCrawler
 from .mobile_crawler import MobileCrawler
 from .image_crawler import ImageCrawler
-from .news_crawler import NewsCrawler
-from .video_crawler import VideoCrawler
 
 
 class SheikhBot:
@@ -48,7 +47,7 @@ class SheikhBot:
         self.crawlers = self._init_crawlers()
         
         # Initialize index builder if enabled
-        if self.config["index_settings"]["build_index"]:
+        if self.config.get("index_settings", {}).get("build_index", False):
             self.index_builder = IndexBuilder(self.config)
         
         # Initialize IndexNow client if enabled
@@ -111,20 +110,10 @@ class SheikhBot:
             crawlers["mobile"] = MobileCrawler(self.config)
             self.logger.info("Mobile crawler initialized")
         
-        # Initialize news crawler if enabled
-        if self.config["specialized_crawlers"]["news"]["enabled"]:
-            crawlers["news"] = NewsCrawler(self.config)
-            self.logger.info("News crawler initialized")
-        
         # Initialize image crawler if enabled
-        if self.config["specialized_crawlers"]["images"]["enabled"]:
+        if self.config["specialized_crawlers"].get("images", {}).get("enabled", False):
             crawlers["images"] = ImageCrawler(self.config)
             self.logger.info("Image crawler initialized")
-        
-        # Initialize video crawler if enabled
-        if self.config["specialized_crawlers"]["videos"]["enabled"]:
-            crawlers["videos"] = VideoCrawler(self.config)
-            self.logger.info("Video crawler initialized")
         
         return crawlers
     
@@ -300,8 +289,21 @@ class SheikhBot:
         self.logger.info(f"Exporting data to {output_file}")
         
         try:
-            self.storage.export(output_file)
-            self.logger.info(f"Data exported successfully to {output_file}")
+            # Get all data from storage
+            all_data = {}
+            for crawler_type in self.crawlers.keys():
+                crawler_data = self.storage.get_all_data(crawler_type)
+                if crawler_data:
+                    all_data[crawler_type] = crawler_data
+            
+            # Create export directory if it doesn't exist
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            
+            # Write data to file
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(all_data, f, indent=2, ensure_ascii=False)
+                
+            self.logger.info(f"Data exported to {output_file}")
         except Exception as e:
             self.logger.error(f"Error exporting data: {str(e)}")
     
@@ -310,24 +312,120 @@ class SheikhBot:
         self.logger.info("Building GitHub Pages site")
         
         try:
-            # Create docs directory if it doesn't exist
-            docs_dir = "docs"
-            os.makedirs(docs_dir, exist_ok=True)
+            # Get GitHub Pages config
+            gh_pages_config = self.config["github_pages"]
+            output_dir = gh_pages_config["output_directory"]
             
-            # Get index template
-            template_path = self.config["github_pages"]["index_template_path"]
+            # Create output directory if it doesn't exist
+            os.makedirs(output_dir, exist_ok=True)
             
-            # Get all crawl data
-            data = self.storage.get_all()
+            # Get template directory
+            template_dir = gh_pages_config.get("template_directory", "templates")
+            default_template = gh_pages_config.get("default_template", "index.html")
+            template_path = os.path.join(template_dir, default_template)
             
-            # TODO: Implement actual GitHub Pages site building
-            # This would typically involve:
-            # 1. Loading a template
-            # 2. Populating it with crawl data
-            # 3. Writing HTML files for each page
-            # 4. Creating index files
+            # Check if template exists
+            if not os.path.exists(template_path):
+                self.logger.warning(f"Template {template_path} not found, using default HTML")
+                html_template = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>{{site_title}}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                        .container { max-width: 1200px; margin: 0 auto; }
+                        .result { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+                        .title { font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
+                        .url { color: green; margin-bottom: 10px; }
+                        .snippet { color: #333; }
+                        .meta { color: #666; font-size: 0.8em; margin-top: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>{{site_title}}</h1>
+                        <p>{{site_description}}</p>
+                        <div id="results">
+                            <!-- Results will be inserted here -->
+                        </div>
+                    </div>
+                    <script>
+                    // JavaScript to load and display results
+                    document.addEventListener('DOMContentLoaded', function() {
+                        fetch('search_index.json')
+                            .then(response => response.json())
+                            .then(data => {
+                                const resultsContainer = document.getElementById('results');
+                                
+                                if (data.documents && data.documents.length > 0) {
+                                    data.documents.forEach(doc => {
+                                        const resultDiv = document.createElement('div');
+                                        resultDiv.className = 'result';
+                                        
+                                        resultDiv.innerHTML = `
+                                            <div class="title">${doc.title}</div>
+                                            <div class="url">${doc.url}</div>
+                                            <div class="snippet">${doc.snippet || ''}</div>
+                                            <div class="meta">Type: ${doc.type} | Date: ${doc.date || 'Unknown'}</div>
+                                        `;
+                                        
+                                        resultsContainer.appendChild(resultDiv);
+                                    });
+                                } else {
+                                    resultsContainer.innerHTML = '<p>No results found.</p>';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error loading results:', error);
+                                document.getElementById('results').innerHTML = '<p>Error loading results.</p>';
+                            });
+                    });
+                    </script>
+                </body>
+                </html>
+                """
+            else:
+                # Read template file
+                with open(template_path, 'r', encoding='utf-8') as f:
+                    html_template = f.read()
             
-            self.logger.info("GitHub Pages site built successfully")
+            # Replace template variables
+            html_content = html_template.replace("{{site_title}}", gh_pages_config["site_title"])
+            html_content = html_content.replace("{{site_description}}", gh_pages_config["site_description"])
+            
+            # Write index.html
+            index_path = os.path.join(output_dir, "index.html")
+            with open(index_path, 'w', encoding='utf-8') as f:
+                f.write(html_content)
+            
+            # Create search index file for GitHub Pages
+            if self.config["index_settings"]["build_index"]:
+                # Get the path to the index file
+                src_index_file = os.path.join(
+                    self.config["index_settings"]["index_directory"],
+                    self.config["index_settings"]["index_file"]
+                )
+                
+                if os.path.exists(src_index_file):
+                    # Copy index file to GitHub Pages directory
+                    dst_index_file = os.path.join(output_dir, "search_index.json")
+                    
+                    # Read and write instead of shutil.copy to handle different encodings
+                    with open(src_index_file, 'r', encoding='utf-8') as src:
+                        with open(dst_index_file, 'w', encoding='utf-8') as dst:
+                            dst.write(src.read())
+                    
+                    self.logger.info(f"Copied search index to {dst_index_file}")
+                else:
+                    self.logger.warning(f"Search index file {src_index_file} not found")
+            
+            self.logger.info(f"GitHub Pages site built successfully in {output_dir}")
+            
+        except KeyError as e:
+            self.logger.error(f"Error building GitHub Pages site: {str(e)}")
         except Exception as e:
             self.logger.error(f"Error building GitHub Pages site: {str(e)}")
     

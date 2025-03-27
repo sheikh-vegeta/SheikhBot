@@ -38,7 +38,10 @@ def main():
         
         print("Crawling and export completed successfully")
     except Exception as e:
+        import traceback
         print(f"Error during crawling: {str(e)}")
+        print("Traceback:")
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__ == "__main__":

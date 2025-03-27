@@ -6,6 +6,4 @@ from .base_crawler import BaseCrawler
 from .desktop_crawler import DesktopCrawler
 from .mobile_crawler import MobileCrawler
 from .image_crawler import ImageCrawler
-from .news_crawler import NewsCrawler
-from .video_crawler import VideoCrawler
 from .sheikhbot import SheikhBot 

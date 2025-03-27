@@ -171,6 +171,17 @@ export_settings:
 
 # Storage settings
 storage:
+  type: "file"  # file or mongodb
+  
+  # File storage settings
+  file:
+    output_directory: "data/crawl_results"
+    
+  # MongoDB settings
+  mongodb:
+    connection_string: "mongodb://localhost:27017"
+    database: "central_search"
+    
   # Cache settings
   cache:
     enabled: true
@@ -230,4 +241,15 @@ excluded_urls:
   - "/wp-content/uploads/.*"
   - "/tag/.*"
   - "/category/.*"
-  - ".*[?&]utm_.*" 
+  - ".*[?&]utm_.*"
+
+# Index settings
+index_settings:
+  build_index: true
+  index_directory: "data/index"
+  index_file: "search_index.json"
+  index_fields:
+    - title
+    - content
+    - url
+    - metadata.description 

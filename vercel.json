@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "name": "sheikh-bot",
+  "builds": [
+    { "src": "**/*.html", "use": "@vercel/static" },
+    { "src": "assets/**", "use": "@vercel/static" },
+    { "src": "docs/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/", "dest": "/index.html" },
+    { "src": "/docs", "dest": "/docs/index.html" },
+    { "src": "/search", "dest": "/docs/search.html" },
+    { "src": "/seo", "dest": "/docs/index.html" },
+    { "src": "/indexnow", "dest": "/docs/index.html" },
+    { "src": "/central", "dest": "/index.html" },
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/docs/(.*)", "dest": "/docs/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
+} 

@@ -165,6 +165,15 @@ seo_analysis:
     structured_data:
       weight: 3
 
+# AI Analysis settings
+ai_analysis:
+  huggingface_enabled: true
+  models:
+    sentiment: "distilbert-base-uncased-finetuned-sst-2-english"
+    quality: "facebook/bart-large-mnli"
+  cache_dir: ".cache/huggingface"
+  offline_mode: false
+
 # Export settings
 export_settings:
   format: "json"  # json, csv, xml

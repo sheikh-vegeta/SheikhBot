@@ -7,7 +7,8 @@ import json
 import re
 from typing import Dict, List, Any, Union
 import logging
-from openai import OpenAI
+from datetime import datetime 
+from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
 
 class IndexBuilder:
     """Builds a simple search index for crawled content."""
@@ -42,18 +43,26 @@ class IndexBuilder:
                 self.logger.warning("Spacy not installed. NLP features disabled.")
                 self.nlp_enabled = False
 
-        # Initialize NVIDIA AI client
-        self.nvidia_enabled = config.get("nvidia_enabled", False)
-        if self.nvidia_enabled:
+        # Initialize Hugging Face pipeline
+        self.hf_enabled = config.get("huggingface_enabled", True)
+        if self.hf_enabled:
             try:
-                self.nvidia_client = OpenAI(
-                    base_url="https://integrate.api.nvidia.com/v1",
-                    api_key=os.environ.get("NVIDIA_API_KEY")
+                # Load sentiment analysis pipeline
+                self.sentiment_pipeline = pipeline(
+                    "sentiment-analysis",
+                    model="distilbert-base-uncased-finetuned-sst-2-english"
                 )
-                self.logger.info("NVIDIA AI integration enabled")
+                
+                # Load text classification pipeline for content quality
+                self.quality_pipeline = pipeline(
+                    "text-classification",
+                    model="facebook/bart-large-mnli"
+                )
+                
+                self.logger.info("Hugging Face pipelines initialized successfully")
             except Exception as e:
-                self.logger.error(f"Error initializing NVIDIA AI: {str(e)}")
-                self.nvidia_enabled = False
+                self.logger.error(f"Error initializing Hugging Face pipelines: {str(e)}")
+                self.hf_enabled = False
 
         # Initialize structured data extraction
         self.extract_structured = config.get("extract_structured", True)
@@ -116,7 +125,7 @@ class IndexBuilder:
         return tokens
     
     def _process_content(self, text: str, url: str) -> Dict[str, Any]:
-        """Process content using NLP and NVIDIA AI."""
+        """Process content using NLP and Hugging Face models."""
         results = {
             "keywords": [],
             "entities": [],
@@ -146,35 +155,35 @@ class IndexBuilder:
             except Exception as e:
                 self.logger.error(f"Error in NLP processing: {str(e)}")
 
-        # Use NVIDIA AI for enhanced analysis
-        if self.nvidia_enabled:
+        # Use Hugging Face models for enhanced analysis
+        if self.hf_enabled:
             try:
-                prompt = f"""Analyze this content and provide:
-                1. Main topics
-                2. Key insights
-                3. Content quality score (1-10)
-                4. SEO recommendations
+                # Truncate text to avoid token limits
+                truncated_text = text[:1024]
                 
-                Content: {text[:2000]}  # Truncate to avoid token limits
-                """
+                # Get sentiment analysis
+                sentiment_result = self.sentiment_pipeline(truncated_text)[0]
                 
-                completion = self.nvidia_client.chat.completions.create(
-                    model="nv-mistralai/mistral-nemo-12b-instruct",
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.2,
-                    top_p=0.7,
-                    max_tokens=1024
-                )
+                # Get content quality score
+                quality_result = self.quality_pipeline(
+                    truncated_text, 
+                    candidate_labels=["high quality", "medium quality", "low quality"]
+                )[0]
+
+                results["ai_insights"] = {
+                    "sentiment": {
+                        "label": sentiment_result["label"],
+                        "score": sentiment_result["score"]
+                    },
+                    "content_quality": {
+                        "label": quality_result["label"],
+                        "score": quality_result["score"]
+                    },
+                    "timestamp": datetime.now().isoformat()
+                }
                 
-                if completion.choices:
-                    results["ai_insights"] = {
-                        "analysis": completion.choices[0].message.content,
-                        "model": "mistral-nemo-12b",
-                        "timestamp": datetime.now().isoformat()
-                    }
-                    
             except Exception as e:
-                self.logger.error(f"Error in NVIDIA AI analysis: {str(e)}")
+                self.logger.error(f"Error in Hugging Face analysis: {str(e)}")
 
         return results
 

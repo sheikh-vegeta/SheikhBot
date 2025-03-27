@@ -10,6 +10,13 @@ import logging
 from datetime import datetime 
 from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
 
+# Move spacy import inside try block
+try:
+    import spacy
+    SPACY_AVAILABLE = True
+except ImportError:
+    SPACY_AVAILABLE = False
+
 class IndexBuilder:
     """Builds a simple search index for crawled content."""
     
@@ -33,14 +40,15 @@ class IndexBuilder:
         # Initialize empty index
         self.index = self._load_existing_index() or {"documents": [], "terms": {}}
         
-        # Initialize NLP and AI components
-        self.nlp_enabled = config.get("nlp_enabled", False)
+        # Initialize NLP if spacy is available
+        self.nlp_enabled = config.get("nlp_enabled", False) and SPACY_AVAILABLE
+        self.nlp = None
         if self.nlp_enabled:
             try:
-                import spacy
                 self.nlp = spacy.load("en_core_web_sm")
-            except ImportError:
-                self.logger.warning("Spacy not installed. NLP features disabled.")
+                self.logger.info("Spacy NLP initialized successfully")
+            except Exception as e:
+                self.logger.warning(f"Failed to load spaCy model: {str(e)}")
                 self.nlp_enabled = False
 
         # Initialize Hugging Face pipeline

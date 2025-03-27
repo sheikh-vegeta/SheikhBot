@@ -75,6 +75,37 @@ Vercel automatically deploys changes when you push to your repository. If you ne
 2. Navigate to "Settings" > "Git"
 3. Configure your preferred deployment settings
 
+## Analytics Setup
+
+To enable analytics for your deployment:
+
+1. In the Vercel dashboard, go to "Settings" > "Analytics"
+2. Click "Enable Analytics"
+3. Add the domains you want to track
+4. Analytics will automatically track:
+   - Page views
+   - Performance metrics
+   - User location data
+   - Device information
+
+## Performance Optimization
+
+The project includes several optimizations:
+
+1. Caching headers for static assets
+2. Automatic image optimization
+3. Edge network distribution
+4. Gzip/Brotli compression
+
+## Route Configuration
+
+Routes are configured in `vercel.json` to handle:
+
+1. Clean URLs without extensions
+2. Proper redirects for SPA navigation
+3. Cache-Control headers
+4. Security headers
+
 ## Troubleshooting
 
 - **404 Errors**: Check the routes in `vercel.json` to ensure proper path handling
@@ -83,4 +114,4 @@ Vercel automatically deploys changes when you push to your repository. If you ne
 
 ## Need Help?
 
-If you encounter any issues with your Vercel deployment, consult the [Vercel documentation](https://vercel.com/docs) or open an issue in this repository. 
+If you encounter any issues with your Vercel deployment, consult the [Vercel documentation](https://vercel.com/docs) or open an issue in this repository.

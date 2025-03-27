@@ -7,7 +7,15 @@
     { "src": "docs/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/", "dest": "/index.html" },
+    { 
+      "src": "/", 
+      "dest": "/index.html",
+      "headers": {
+        "Cache-Control": "public, max-age=3600",
+        "X-Frame-Options": "DENY",
+        "X-Content-Type-Options": "nosniff"
+      }
+    },
     { "src": "/docs", "dest": "/docs/index.html" },
     { "src": "/search", "dest": "/docs/search.html" },
     { "src": "/seo", "dest": "/docs/index.html" },
@@ -18,5 +26,9 @@
     { "src": "/(.*)", "dest": "/$1" }
   ],
   "cleanUrls": true,
-  "trailingSlash": false
-} 
+  "trailingSlash": false,
+  "analytics": {
+    "enabled": true,
+    "domains": ["sheikh-bot.vercel.app"]
+  }
+}

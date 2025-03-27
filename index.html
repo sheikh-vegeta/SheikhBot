@@ -6,6 +6,9 @@
     <title>Central Search - Advanced Web Crawler and SEO Analysis Tool</title>
     <meta name="description" content="A powerful web crawler and SEO analysis tool designed to help make your website discoverable to Search.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script defer src="/_vercel/insights/script.js"></script>
+    <meta name="theme-color" content="#4a6cf7">
+    <link rel="manifest" href="/manifest.json">
     <style>
         :root {
             --primary-color: #4a6cf7;
@@ -364,6 +367,18 @@
                 margin-right: 0;
             }
         }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .feature-card {
+                margin: 1rem;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -599,4 +614,4 @@ pip install central-search
         });
     </script>
 </body>
-</html> 
+</html>

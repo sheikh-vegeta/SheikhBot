@@ -42,6 +42,20 @@ python main.py crawl https://example.com
 
 The results will be saved to the configured output directory (default: `data/`).
 
+### GitHub Actions Workflow
+
+The included GitHub Actions workflow allows you to automatically run Central Search on a schedule or manually:
+
+1. The workflow is configured in `.github/workflows/crawl.yml`
+2. It will run daily at midnight UTC by default
+3. You can manually trigger a run from the Actions tab in your GitHub repository
+4. When manually triggering, you can specify:
+   - URLs to crawl (comma-separated)
+   - Crawl depth
+   - Which crawlers to use (desktop, mobile, image)
+
+**Important Note:** If you're encountering indentation errors when running the workflow, make sure all Python code blocks in the YAML file are properly indented. Each line of Python code in the workflow file should be indented with the same number of spaces.
+
 ### Configuration Options
 
 Edit `config.yml` to customize crawling behavior:

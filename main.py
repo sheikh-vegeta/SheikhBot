@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SheikhBot - Command-line interface for the web crawler
+Central Search - Command-line interface for the web crawler and SEO analysis tool
 """
 
 import argparse
@@ -10,14 +10,14 @@ import logging
 from typing import List, Optional
 import yaml
 
-from src.crawlers import SheikhBot
+from src.crawlers import SheikhBot as Central
 from src.utils.logger import setup_logger
 
 
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="SheikhBot - A web crawler inspired by Googlebot",
+        description="Central Search - A web crawler and SEO analysis tool",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     
@@ -135,7 +135,7 @@ def main():
     # Show version and exit if requested
     if args.command == "version":
         from src import __version__
-        print(f"SheikhBot v{__version__}")
+        print(f"Central Search v{__version__}")
         sys.exit(0)
     
     # Load configuration
@@ -152,17 +152,17 @@ def main():
     # Set up logging
     log_level = getattr(logging, config["logging"]["level"])
     logger = setup_logger(
-        name="sheikhbot",
+        name="central",
         level=log_level,
         log_file=config["logging"]["file"]
     )
     
     # Initialize the crawler
     try:
-        bot = SheikhBot(config)
-        logger.info(f"SheikhBot initialized with config from {args.config}")
+        bot = Central(config)
+        logger.info(f"Central Search initialized with config from {args.config}")
     except Exception as e:
-        logger.error(f"Error initializing SheikhBot: {str(e)}")
+        logger.error(f"Error initializing Central Search: {str(e)}")
         sys.exit(1)
     
     # Execute the requested command
@@ -210,7 +210,7 @@ def main():
         print("No command specified. Use --help for usage information.")
         sys.exit(1)
     
-    logger.info("SheikhBot completed successfully")
+    logger.info("Central Search completed successfully")
 
 
 if __name__ == "__main__":

@@ -48,6 +48,32 @@ flowchart TD
 - **IndexNow Integration**: Instant search engine indexing | তৎক্ষণাৎ সার্চ ইঞ্জিন ইনডেক্সিং
 - **Automated Monitoring**: Continuous website performance tracking | ক্রমাগত ওয়েবসাইট পারফরমেন্স ট্র্যাকিং
 
+### SheikhBot
+
+Advanced web crawler and search indexing system with AI capabilities.
+
+## Key Features
+
+- Mobile-first crawling and indexing for better search engine ranking
+- JavaScript rendering and AJAX content processing
+- Adaptive crawling based on site performance
+- Canonical URL detection and handling
+- AI-powered content understanding and ranking
+- Robots.txt and meta directive compliance
+- Site structure and hierarchy analysis  
+- Sitemap and backlink discovery
+- Social media preview generation
+- Open Graph (OG) meta tag support
+- Privacy-focused content indexing
+- SEO analysis and domain authority tracking
+- Backlink analysis and keyword ranking
+- Multi-language and regional indexing support
+- Static HTML optimization
+- Natural Language Processing (NLP)
+- Structured data extraction
+- Competitor analysis capabilities
+- Search algorithm data processing
+
 ## 🛠️ Quick Start | দ্রুত শুরু
 
 ### Prerequisites | প্রাক-আবশ্যকতাসমূহ

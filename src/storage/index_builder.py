@@ -30,6 +30,23 @@ class IndexBuilder:
         
         # Initialize empty index
         self.index = self._load_existing_index() or {"documents": [], "terms": {}}
+        
+        # Initialize NLP and AI components
+        self.nlp_enabled = config.get("nlp_enabled", False)
+        if self.nlp_enabled:
+            try:
+                import spacy
+                self.nlp = spacy.load("en_core_web_sm")
+            except ImportError:
+                self.logger.warning("Spacy not installed. NLP features disabled.")
+                self.nlp_enabled = False
+
+        # Initialize structured data extraction
+        self.extract_structured = config.get("extract_structured", True)
+        
+        # SEO analysis settings
+        self.seo_analysis = config.get("seo_analysis", True)
+        self.competitor_tracking = config.get("competitor_tracking", False)
     
     def _load_existing_index(self) -> Dict[str, Any]:
         """
@@ -84,6 +101,38 @@ class IndexBuilder:
         
         return tokens
     
+    def _process_content(self, text: str, url: str) -> Dict[str, Any]:
+        """Process content using NLP and extract insights."""
+        results = {
+            "keywords": [],
+            "entities": [],
+            "summary": "",
+            "language": "",
+            "sentiment": 0
+        }
+
+        if self.nlp_enabled and self.nlp:
+            try:
+                doc = self.nlp(text)
+                
+                # Extract key phrases and entities
+                results["keywords"] = [token.text for token in doc if not token.is_stop]
+                results["entities"] = [(ent.text, ent.label_) for ent in doc.ents]
+                
+                # Generate summary (first few sentences)
+                results["summary"] = " ".join([sent.text for sent in list(doc.sents)[:3]])
+                
+                # Detect language
+                results["language"] = doc.lang_
+                
+                # Basic sentiment analysis
+                results["sentiment"] = sum([token.sentiment for token in doc]) / len(doc)
+                
+            except Exception as e:
+                self.logger.error(f"Error in NLP processing: {str(e)}")
+
+        return results
+
     def add_to_index(self, data: Union[Dict[str, Any], List[Dict[str, Any]]]) -> None:
         """
         Add data to the search index.
@@ -157,6 +206,26 @@ class IndexBuilder:
                     
                     if doc_id not in self.index["terms"][token]:
                         self.index["terms"][token].append(doc_id)
+                
+                # Process content with NLP
+                if "content" in item and self.nlp_enabled:
+                    nlp_results = self._process_content(item["content"], item["url"])
+                    document.update(nlp_results)
+                
+                # Extract structured data
+                if self.extract_structured and "structured_data" in item:
+                    document["structured_data"] = item["structured_data"]
+                
+                # Add SEO metrics
+                if self.seo_analysis:
+                    document["seo_metrics"] = {
+                        "title_length": len(item.get("title", "")),
+                        "meta_desc_length": len(item.get("description", "")),
+                        "keyword_density": self._calculate_keyword_density(item),
+                        "has_structured_data": bool(item.get("structured_data")),
+                        "has_og_tags": bool(item.get("og_tags")),
+                        "mobile_friendly": item.get("mobile_friendly", False)
+                    }
             
             except Exception as e:
                 self.logger.error(f"Error indexing item: {str(e)}")
@@ -215,4 +284,4 @@ class IndexBuilder:
             
         except Exception as e:
             self.logger.error(f"Error searching index: {str(e)}")
-            return [] 
+            return []

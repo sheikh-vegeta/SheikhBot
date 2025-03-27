@@ -13,6 +13,7 @@ from ..utils.config import load_config
 from ..utils.url import normalize_url, is_valid_url, get_domain
 from ..utils.logger import setup_logger
 from ..utils.indexnow import IndexNowClient
+from ..utils.sitemap import SitemapGenerator
 from ..storage import FileStorage, MongoDBStorage, IndexBuilder
 
 from .base_crawler import BaseCrawler
@@ -54,6 +55,8 @@ class SheikhBot:
         self.indexnow_client = None
         if "indexnow" in self.config and self.config["indexnow"]["enabled"]:
             self._init_indexnow()
+        
+        self.sitemap_generator = SitemapGenerator(self.config)
         
         self.logger.info("SheikhBot initialized successfully")
     
@@ -254,6 +257,33 @@ class SheikhBot:
             submitted_count = self.submit_urls_to_indexnow(indexnow_urls)
             stats["urls_submitted_to_indexnow"] = submitted_count
         
+        # Generate sitemaps for crawled domains
+        if self.config["sitemap_settings"]["enabled"]:
+            try:
+                domain_urls = {}
+                for result in crawl_results:
+                    domain = get_domain(result["url"])
+                    if domain not in domain_urls:
+                        domain_urls[domain] = []
+                    domain_urls[domain].append(result)
+                
+                sitemaps = []
+                for domain, urls in domain_urls.items():
+                    sitemap_path = self.sitemap_generator.generate_sitemap(urls, domain)
+                    sitemaps.append(sitemap_path)
+                
+                # Create sitemap index if multiple sitemaps
+                if len(sitemaps) > 1:
+                    index_path = self.sitemap_generator.create_sitemap_index(sitemaps)
+                    self.logger.info(f"Created sitemap index at {index_path}")
+                
+                # Optionally ping search engines
+                if self.config["sitemap_settings"]["ping_search_engines"]:
+                    self._ping_search_engines(sitemaps)
+            
+            except Exception as e:
+                self.logger.error(f"Error generating sitemaps: {str(e)}")
+        
         # Calculate crawl duration
         stats["duration"] = time.time() - stats["start_time"]
         
@@ -437,4 +467,4 @@ class SheikhBot:
         if hasattr(self, 'index_builder'):
             self.index_builder.clear_index()
         
-        self.logger.info("All data cleared successfully") 
+        self.logger.info("All data cleared successfully")

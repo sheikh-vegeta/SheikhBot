@@ -236,6 +236,18 @@ github_pages:
     sorting: true
     pagination: true
 
+# Sitemap settings
+sitemap_settings:
+  enabled: true
+  output_directory: "sitemaps"
+  base_url: "https://example.com"  # Replace with your domain
+  auto_submit: true
+  include_images: true
+  compress_sitemaps: true
+  max_urls_per_sitemap: 50000
+  ping_search_engines: true
+  robots_txt_path: "robots.txt"
+
 # Domain restrictions
 allowed_domains: []  # Empty = no restrictions, otherwise only crawl these domains
 

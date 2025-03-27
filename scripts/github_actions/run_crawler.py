@@ -4,6 +4,12 @@ Run the Central Search crawler with specified parameters.
 Used by GitHub Actions workflow.
 """
 import sys
+import os
+from pathlib import Path
+
+# Add the project root directory to the Python path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
 from src.crawlers import SheikhBot as Central
 
 def main():

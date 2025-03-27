@@ -57,18 +57,22 @@ jobs:
           
           # Modify config based on input
           echo "Modifying configuration based on inputs"
-          python scripts/github_actions/modify_config.py "${{ github.event.inputs.crawlers }}" "${{ github.event.inputs.depth }}"
+          PYTHONPATH=$PYTHONPATH:$(pwd) python scripts/github_actions/modify_config.py "${{ github.event.inputs.crawlers }}" "${{ github.event.inputs.depth }}"
           
           # Run the crawler for each URL
           for url in "${URL_ARRAY[@]}"; do
             echo "Crawling $url"
-            python scripts/github_actions/run_crawler.py "$url" "config_modified.yml"
+            PYTHONPATH=$PYTHONPATH:$(pwd) python scripts/github_actions/run_crawler.py "$url" "config_modified.yml"
           done
+        env:
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
       
       - name: Run Crawler with default URLs
         if: ${{ github.event.inputs.urls == '' }}
         run: |
-          python scripts/github_actions/run_crawler.py
+          PYTHONPATH=$PYTHONPATH:$(pwd) python scripts/github_actions/run_crawler.py
+        env:
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
       
       - name: Build GitHub Pages
         run: |
@@ -84,7 +88,9 @@ jobs:
           fi
           
           # Create a JSON index file of all results
-          python scripts/github_actions/build_index.py
+          PYTHONPATH=$PYTHONPATH:$(pwd) python scripts/github_actions/build_index.py
+        env:
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

@@ -1,172 +1,174 @@
-# 🌐 Central Search: SEO Optimization Toolkit
+<div align="center">
+  <img src="https://raw.githubusercontent.com/sheikh-vegeta/SheikhBot/refs/heads/main/assets/sheikh.png" alt="Central Search Logo" width="100" style="border-radius: 50%;">
+</div>
 
-![Central Search Logo](https://raw.githubusercontent.com/sheikh-vegeta/SheikhBot/refs/heads/main/assets/sheikh.png)
+# 🌐 Central Search: SEO Toolkit
 
-**An advanced web crawling and SEO toolkit designed to supercharge your website’s search engine performance.**
+**A next-gen web crawling and SEO optimization suite to elevate your site’s performance.**
 
 ---
 
 ## 🚀 Overview | প্রোজেক্ট পরিচিতি
 
-Central Search, powered by SheikhBot, is a state-of-the-art solution for web crawling, SEO analysis, and optimization. Whether you're aiming to improve discoverability, boost rankings, or streamline indexing, this toolkit delivers AI-driven insights and cutting-edge features.
+Central Search, powered by SheikhBot, is your all-in-one solution for advanced web crawling, SEO analysis, and instant indexing. Built with AI and modern web technologies, it’s designed to make your website shine in search results.
 
-### 🔗 Community & Support | সম্প্রদায় এবং সহায়তা
-- **Telegram**: [t.me/RecentCoders](https://t.me/RecentCoders)  
-- **GitHub**: [SheikhBot Repository](https://github.com/sheikh-vegeta/SheikhBot)  
+🔗 **Community**: [Telegram](https://t.me/RecentCoders) | [GitHub](https://github.com/sheikh-vegeta/SheikhBot)
 
 ---
 
 ## 🌈 Workflow | প্রোজেক্ট প্রবাহ
 
 ```mermaid
-flowchart TD
+graph TD
     A[Website] -->|Crawl| B{Central Search}
     B -->|Analyze| C[SEO Insights]
     B -->|Render| D[JS Rendering]
     B -->|Validate| E[Structured Data]
-    C -->|Optimize| F[Content Recommendations]
+    C -->|Optimize| F[Recommendations]
     F -->|Submit| G[IndexNow]
     G -->|Index| H[Search Engines]
 
-    subgraph Advanced Features
+    subgraph Core Features
         D
         E
         F
     end
 
-    style A fill:#f9f,stroke:#333,stroke-width:4px
-    style B fill:#bbf,stroke:#f66,stroke-width:2px
-    style C fill:#bfb,stroke:#333,stroke-width:2px
-    style G fill:#ff9,stroke:#333,stroke-width:2px
+    style A fill:#f9f,stroke:#333
+    style B fill:#bbf,stroke:#f66
+    style C fill:#bfb,stroke:#333
+    style G fill:#ff9,stroke:#333
 ```
 
 ---
 
-## 📊 Build Status
+## 📊 Status
 
-[![Scheduled Web Crawling](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/crawl.yml/badge.svg)](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/crawl.yml)  
-[![Pages Build](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/pages/pages-build-deployment)  
-[![Domain Processing](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/domain_processor.yml/badge.svg)](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/domain_processor.yml)
+<div align="center">
+  <a href="https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/crawl.yml">
+    <img src="https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/crawl.yml/badge.svg" alt="Crawl Status">
+  </a>
+  <a href="https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/pages/pages-build-deployment">
+    <img src="https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/pages/pages-build-deployment/badge.svg" alt="Pages Build">
+  </a>
+  <a href="https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/domain_processor.yml">
+    <img src="https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/domain_processor.yml/badge.svg" alt="Domain Processing">
+  </a>
+</div>
 
 ---
 
 ## ✨ Features | মূল বৈশিষ্ট্য
 
-### 🔍 SEO Analysis | উন্নত SEO বিশ্লেষণ
-- **Deep Crawling**: Multi-platform site scanning  
-- **JS Rendering**: Detects dynamic content  
-- **Structured Data**: Validates schema markup  
-- **Insights**: Actionable SEO recommendations  
+### 🔍 SEO Analysis
+- **Deep Crawl**: Scans across platforms  
+- **JS Rendering**: Captures dynamic content  
+- **Structured Data**: Validates schemas  
+- **Insights**: Boosts SEO with precision  
 
-### 🤖 Optimization | বুদ্ধিমান অপ্টিমাইজেশন
-- **Content Scoring**: AI-powered quality checks  
-- **Mobile-First**: Ensures cross-device compatibility  
-- **IndexNow**: Instant search engine updates  
-- **Monitoring**: Tracks performance over time  
+### 🤖 Optimization
+- **Content AI**: Scores quality smartly  
+- **Mobile-First**: Adapts to all devices  
+- **IndexNow**: Updates search engines instantly  
+- **Monitoring**: Tracks progress 24/7  
 
-### SheikhBot Highlights
-- Mobile-first crawling  
-- JavaScript & AJAX processing  
-- Adaptive crawl rates  
-- Canonical URL support  
-- AI content ranking  
-- Robots.txt compliance  
-- Sitemap & backlink analysis  
-- Multi-language indexing  
-- NLP & structured data extraction  
+### SheikhBot Edge
+- Mobile-first indexing  
+- JavaScript & AJAX support  
+- Adaptive crawling  
+- AI-driven ranking  
+- Multi-language ready  
 
 ---
 
-## 🛠️ Get Started | দ্রুত শুরু
+## 🛠️ Start Here | দ্রুত শুরু
 
-### Prerequisites | প্রাক-আবশ্যকতা
+### Prerequisites
 - Python 3.8+  
 - Chrome/Chromium  
 - Git  
 
-### Installation | ইনস্টলেশন
+### Install
 ```bash
-# Clone the repo
 git clone https://github.com/sheikh-vegeta/SheikhBot.git
 cd SheikhBot
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### Usage | ব্যবহার
+### Run
 ```bash
-# Crawl a website
+# Crawl a site
 python main.py crawl https://example.com
 
-# Submit to IndexNow
+# Index a page
 python main.py indexnow submit https://example.com/new-page
 ```
 
 ---
 
-## 🚀 Advanced Setup | উন্নত কনফিগারেশন
+## 🚀 Advanced | উন্নত কনফিগারেশন
 
-### SEO Strategies | SEO কৌশল
-- Optimized titles & headings  
-- Mobile-first design  
-- Schema markup support  
-- Performance scoring  
+### SEO Boost
+- Smart titles & headings  
+- Mobile-ready design  
+- Schema integration  
+- Performance metrics  
 
-### Customize | কনফিগারেশন
-Edit `config.yml` for:  
+### Customize
+Edit `config.yml`:  
 - Crawl depth  
 - Extraction rules  
-- SEO parameters  
-- Notifications  
+- SEO settings  
+- Alerts  
 
 ---
 
-## 💡 Best Practices | সর্বোত্তম অনুশীলন
-1. Run regular SEO audits  
-2. Monitor discoverability  
-3. Apply optimizations  
-4. Update dependencies  
+## 💡 Tips | সর্বোত্তম অনুশীলন
+- Audit regularly  
+- Track visibility  
+- Optimize often  
+- Stay updated  
 
 ---
 
 ## 🤝 Contribute | অবদান
 
-We’d love your help!  
-
-### Steps | অবদানের পদ্ধতি
-1. Fork the repo  
-2. Create a branch  
+Join us!  
+1. Fork it  
+2. Branch off  
 3. Commit changes  
-4. Push your branch  
-5. Submit a PR  
+4. Push it  
+5. Open a PR  
 
 ---
 
 ## 📄 License | লাইসেন্স
 
-[MIT License](LICENSE) - Open-source and free  
+[MIT License](LICENSE) - Free for all  
 
 ---
 
-## 🌟 Powered By | সমর্� tãoর্থিত
+## 🌟 Built By | সমর্থিত
 - **Community**: [t.me/RecentCoders](https://t.me/RecentCoders)  
-- **Tech**: Python, AI, Web Crawling  
-- **Mission**: Accessible SEO for all  
+- **Tech**: Python, AI, Crawling  
+- **Goal**: SEO for everyone  
 
 ---
 
 ## 🛡️ Security | নিরাপত্তা
-- Secure API keys  
-- Regular updates  
-- Trusted dependencies  
-- Access controls  
+- Lock down API keys  
+- Update often  
+- Trust your deps  
+- Control access  
 
 ---
 
-## 📞 Contact | যোগাযোগ
+## 📞 Reach Out | যোগাযোগ
 - **Telegram**: [Recent Coders](https://t.me/RecentCoders)  
 - **Email**: support@sheikhbot.dev  
-- **Issues**: [GitHub Issues](https://github.com/sheikh-vegeta/SheikhBot/issues)  
+- **Issues**: [GitHub](https://github.com/sheikh-vegeta/SheikhBot/issues)  
 
-**Crafted with ❤️ by the Open Source Community**
+<div align="center">
+  <strong>Made with ❤️ by Open Source Enthusiasts</strong>
+</div>
+

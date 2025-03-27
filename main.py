@@ -12,6 +12,7 @@ import yaml
 
 from src.crawlers import SheikhBot as Central
 from src.utils.logger import setup_logger
+from src.utils.indexnow import IndexNowClient
 
 
 def parse_args():
@@ -63,6 +64,11 @@ def parse_args():
         "-o", "--output", 
         help="Output file path. If not provided, uses export_settings from config."
     )
+    crawl_parser.add_argument(
+        "--indexnow", 
+        action="store_true", 
+        help="Submit crawled URLs to search engines using IndexNow"
+    )
     
     # Export command
     export_parser = subparsers.add_parser("export", help="Export crawled data")
@@ -84,6 +90,49 @@ def parse_args():
         "-d", "--directory", 
         default="docs",
         help="Output directory for GitHub Pages"
+    )
+    
+    # IndexNow commands
+    indexnow_parser = subparsers.add_parser("indexnow", help="IndexNow operations")
+    indexnow_subparsers = indexnow_parser.add_subparsers(dest="indexnow_command", help="IndexNow command")
+    
+    # Generate key file
+    genkey_parser = indexnow_subparsers.add_parser("genkey", help="Generate IndexNow key file")
+    genkey_parser.add_argument(
+        "-d", "--directory", 
+        default="data",
+        help="Directory to save the key file"
+    )
+    genkey_parser.add_argument(
+        "--key", 
+        help="IndexNow API key. If not provided, uses the key from config."
+    )
+    
+    # Submit URLs
+    submit_parser = indexnow_subparsers.add_parser("submit", help="Submit URLs to IndexNow")
+    submit_parser.add_argument(
+        "urls", 
+        nargs="+", 
+        help="URLs to submit to IndexNow"
+    )
+    submit_parser.add_argument(
+        "--key", 
+        help="IndexNow API key. If not provided, uses the key from config."
+    )
+    submit_parser.add_argument(
+        "--key-location", 
+        help="URL where the key file is hosted. If not provided, uses the default location."
+    )
+    submit_parser.add_argument(
+        "--search-engine", 
+        choices=["default", "bing", "yandex", "seznam", "naver", "yep"],
+        default="default",
+        help="Search engine to submit to"
+    )
+    submit_parser.add_argument(
+        "--bulk", 
+        action="store_true", 
+        help="Submit URLs in bulk (all URLs must be from the same domain)"
     )
     
     # Version command
@@ -124,7 +173,91 @@ def modify_config(config: dict, args) -> dict:
     if hasattr(args, "format") and args.format is not None:
         modified_config["export_settings"]["format"] = args.format
     
+    # Adjust IndexNow settings if enabled via command line
+    if hasattr(args, "indexnow") and args.indexnow:
+        modified_config["indexnow"]["enabled"] = True
+        modified_config["indexnow"]["auto_submit"] = True
+    
     return modified_config
+
+
+def handle_indexnow_commands(args, config, logger):
+    """
+    Handle IndexNow-related commands.
+    
+    Args:
+        args: Command line arguments
+        config (dict): Configuration
+        logger: Logger instance
+    
+    Returns:
+        int: Exit code
+    """
+    # Check if IndexNow is configured
+    if "indexnow" not in config:
+        logger.error("IndexNow is not configured in config.yml")
+        return 1
+    
+    # Get API key from args or config
+    api_key = args.key if hasattr(args, "key") and args.key else config["indexnow"]["api_key"]
+    
+    if not api_key:
+        logger.error("No IndexNow API key provided")
+        return 1
+    
+    try:
+        if args.indexnow_command == "genkey":
+            # Generate key file
+            directory = args.directory
+            
+            # Ensure directory exists
+            os.makedirs(directory, exist_ok=True)
+            
+            # Initialize client and generate key file
+            client = IndexNowClient(api_key=api_key)
+            key_file_path = client.generate_key_file(directory)
+            
+            logger.info(f"IndexNow key file generated successfully at {key_file_path}")
+            logger.info(f"Make sure to place this file at your website root: https://yourdomain.com/{api_key}.txt")
+            return 0
+                
+        elif args.indexnow_command == "submit":
+            # Submit URLs to IndexNow
+            key_location = args.key_location if hasattr(args, "key_location") and args.key_location else None
+            search_engine = args.search_engine
+            urls = args.urls
+            bulk = args.bulk
+            
+            # Initialize client
+            client = IndexNowClient(
+                api_key=api_key, 
+                key_location=key_location,
+                search_engines=[search_engine],
+                bulk_submit=bulk
+            )
+            
+            # Submit URLs (the client will automatically handle bulk vs. individual)
+            result = client.submit_urls(urls, search_engine)
+            
+            if result.get("overall_success", False) or result.get("success", False):
+                logger.info(f"Successfully submitted URLs to {search_engine}")
+                
+                # Log individual results if available
+                if "results" in result:
+                    success_count = sum(1 for r in result["results"].values() if r.get("success", False))
+                    logger.info(f"Successfully submitted {success_count} out of {len(urls)} URLs")
+                
+                return 0
+            else:
+                error_msg = result.get("error", "Unknown error")
+                logger.error(f"Failed to submit URLs to {search_engine}: {error_msg}")
+                return 1
+        else:
+            logger.error(f"Unknown IndexNow command: {args.indexnow_command}")
+            return 1
+    except Exception as e:
+        logger.error(f"Error executing IndexNow command: {str(e)}")
+        return 1
 
 
 def main():
@@ -157,6 +290,11 @@ def main():
         log_file=config["logging"]["file"]
     )
     
+    # Handle IndexNow commands
+    if args.command == "indexnow":
+        exit_code = handle_indexnow_commands(args, config, logger)
+        sys.exit(exit_code)
+    
     # Initialize the crawler
     try:
         bot = Central(config)
@@ -172,11 +310,63 @@ def main():
         
         try:
             logger.info(f"Starting crawl with {'provided URLs' if urls else 'start_urls from config'}")
-            bot.crawl(urls)
+            crawled_data = bot.crawl(urls)
             
             # Export data if output is specified
             if hasattr(args, "output") and args.output:
                 bot.export_data(args.output)
+            
+            # Submit URLs to IndexNow if enabled
+            if config["indexnow"]["enabled"] and config["indexnow"]["auto_submit"]:
+                try:
+                    indexnow_config = config["indexnow"]
+                    api_key = indexnow_config["api_key"]
+                    key_location = indexnow_config.get("key_location")
+                    search_engines = indexnow_config.get("search_engines", ["default"])
+                    bulk_submit = indexnow_config.get("bulk_submit", True)
+                    
+                    # Extract URLs from crawled data
+                    crawled_urls = []
+                    if crawled_data and isinstance(crawled_data, list):
+                        for item in crawled_data:
+                            if isinstance(item, dict) and "url" in item:
+                                crawled_urls.append(item["url"])
+                    
+                    if crawled_urls:
+                        logger.info(f"Submitting {len(crawled_urls)} crawled URLs to IndexNow...")
+                        
+                        # Initialize IndexNow client
+                        client = IndexNowClient(
+                            api_key=api_key,
+                            key_location=key_location,
+                            search_engines=search_engines,
+                            bulk_submit=bulk_submit
+                        )
+                        
+                        # Submit URLs
+                        results = client.submit_urls(crawled_urls)
+                        
+                        # Log results
+                        success_count = 0
+                        if "results" in results:
+                            success_count = sum(1 for r in results["results"].values() if r.get("success", False))
+                            logger.info(f"Successfully submitted {success_count} out of {len(crawled_urls)} URLs to IndexNow")
+                        elif results.get("success", False):
+                            logger.info(f"Successfully submitted {len(crawled_urls)} URLs to IndexNow")
+                        else:
+                            error = results.get("error", "Unknown error")
+                            logger.warning(f"Failed to submit URLs to IndexNow: {error}")
+                    
+                    # Generate key file if configured
+                    if indexnow_config.get("generate_key_file", False):
+                        output_dir = config["export_settings"]["output_directory"]
+                        client.generate_key_file(output_dir)
+                        logger.info(f"Generated IndexNow key file in {output_dir}")
+                
+                except Exception as e:
+                    logger.error(f"Error submitting URLs to IndexNow: {str(e)}")
+                    # Continue execution, don't fail the whole process
+        
         except Exception as e:
             logger.error(f"Error during crawl: {str(e)}")
             sys.exit(1)

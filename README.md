@@ -12,6 +12,7 @@ A powerful web crawler and SEO analysis tool designed to help make your website 
 - **Structured Data Analysis**: Validate schema markup and structured data
 - **Content Optimization**: Get recommendations for improving content quality and relevance
 - **Full-Text Search**: Index and search your site content to find optimization opportunities
+- **IndexNow Integration**: Instantly notify search engines about new or updated content
 - **Beautiful Reports**: Modern interface for browsing findings and recommendations
 - **Automated Monitoring**: Schedule regular crawls with GitHub Actions
 
@@ -74,6 +75,70 @@ If you encounter indentation errors in your GitHub Actions workflow:
    ```bash
    git update-index --chmod=+x scripts/github_actions/*.py
    ```
+
+### IndexNow Integration
+
+Central Search includes full support for the [IndexNow](https://www.indexnow.org/) protocol, which allows websites to instantly inform search engines about content changes. This significantly improves discovery time from days or weeks to just seconds.
+
+#### What is IndexNow?
+
+IndexNow is a simple ping that instantly notifies search engines when URLs are added, updated, or deleted. It's supported by Microsoft Bing, Yandex, Naver, Seznam.cz, and Yep - with more search engines expected to join.
+
+#### Setting Up IndexNow
+
+1. Configure IndexNow in your `config.yml`:
+   ```yaml
+   indexnow:
+     enabled: true
+     api_key: "YOUR_INDEXNOW_API_KEY"  # Generate a key at indexnow.org
+     key_location: ""  # Optional URL where your key file is hosted
+     search_engines:
+       - "default"  # Use the unified API (all participating engines)
+     auto_submit: true  # Automatically submit URLs after crawling
+     bulk_submit: true  # Submit URLs in bulk where possible
+     generate_key_file: true  # Generate key file in export directory
+   ```
+
+2. Generate an IndexNow key file (required for verification):
+   ```bash
+   python main.py indexnow genkey
+   ```
+   This creates a key file (e.g., `cb7a0c39fe74468ba119283e95c08b00.txt`) that you need to host at the root of your website.
+
+3. Verify your key file is accessible:
+   ```
+   https://www.example.com/cb7a0c39fe74468ba119283e95c08b00.txt
+   ```
+   The file should contain only your API key.
+
+#### Submitting URLs with IndexNow
+
+- **During crawling**: URLs are automatically submitted if `auto_submit` is enabled in your config:
+  ```bash
+  python main.py crawl https://example.com
+  ```
+
+- **Submit URLs manually**:
+  ```bash
+  # Submit a single URL
+  python main.py indexnow submit https://example.com/new-page
+
+  # Submit multiple URLs
+  python main.py indexnow submit https://example.com/page1 https://example.com/page2
+
+  # Submit URLs in bulk (more efficient, all URLs must be from same domain)
+  python main.py indexnow submit --bulk https://example.com/page1 https://example.com/page2
+
+  # Submit to a specific search engine
+  python main.py indexnow submit --search-engine bing https://example.com/page
+  ```
+
+#### Benefits of IndexNow
+
+- **Faster Indexing**: Get your content discovered and indexed in seconds instead of waiting for crawlers
+- **Reduced Crawl Load**: Search engines can focus on crawling changes, reducing unnecessary hits to your server
+- **Better Resource Utilization**: More efficient for both website owners and search engines
+- **Broader Search Coverage**: Get discovered across multiple search engines with a single protocol
 
 ### Configuration Options
 

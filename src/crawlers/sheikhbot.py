@@ -11,6 +11,7 @@ import logging
 from ..utils.config import load_config
 from ..utils.url import normalize_url, is_valid_url, get_domain
 from ..utils.logger import setup_logger
+from ..utils.indexnow import IndexNowClient
 from ..storage import FileStorage, MongoDBStorage, IndexBuilder
 
 from .base_crawler import BaseCrawler
@@ -50,8 +51,40 @@ class SheikhBot:
         if self.config["index_settings"]["build_index"]:
             self.index_builder = IndexBuilder(self.config)
         
+        # Initialize IndexNow client if enabled
+        self.indexnow_client = None
+        if "indexnow" in self.config and self.config["indexnow"]["enabled"]:
+            self._init_indexnow()
+        
         self.logger.info("SheikhBot initialized successfully")
     
+    def _init_indexnow(self):
+        """Initialize the IndexNow client for instant search engine notification."""
+        try:
+            indexnow_config = self.config["indexnow"]
+            
+            if not indexnow_config["api_key"]:
+                self.logger.warning("IndexNow enabled but no API key provided")
+                return
+                
+            self.logger.info(f"Initializing IndexNow client with API key: {indexnow_config['api_key'][:8]}...")
+            
+            self.indexnow_client = IndexNowClient(
+                api_key=indexnow_config["api_key"],
+                key_location=indexnow_config["key_location"] if indexnow_config["key_location"] else None
+            )
+            
+            # Generate key file if enabled
+            if indexnow_config["generate_key_file"]:
+                output_dir = self.config["export_settings"]["output_directory"]
+                if self.indexnow_client.generate_key_file(output_dir):
+                    self.logger.info(f"IndexNow key file generated in {output_dir}")
+            
+            self.logger.info("IndexNow client initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Error initializing IndexNow client: {str(e)}")
+            self.indexnow_client = None
+
     def _init_storage(self) -> None:
         """Initialize the appropriate storage backend based on configuration."""
         storage_type = self.config["storage"]["type"]
@@ -95,6 +128,66 @@ class SheikhBot:
         
         return crawlers
     
+    def submit_urls_to_indexnow(self, urls):
+        """
+        Submit URLs to search engines using IndexNow protocol.
+        
+        Args:
+            urls (List[str]): URLs to submit to search engines
+        """
+        if not self.indexnow_client or not urls:
+            return
+            
+        try:
+            indexnow_config = self.config["indexnow"]
+            search_engines = indexnow_config["search_engines"]
+            
+            # Group URLs by domain
+            urls_by_domain = {}
+            for url in urls:
+                domain = get_domain(url)
+                if domain not in urls_by_domain:
+                    urls_by_domain[domain] = []
+                urls_by_domain[domain].append(url)
+            
+            submitted_count = 0
+            
+            # Submit URLs for each domain
+            for domain, domain_urls in urls_by_domain.items():
+                self.logger.info(f"Submitting {len(domain_urls)} URLs for domain {domain} to IndexNow")
+                
+                for search_engine in search_engines:
+                    if indexnow_config["bulk_submit"] and len(domain_urls) > 1:
+                        # Submit URLs in bulk
+                        success, message = self.indexnow_client.submit_urls_bulk(
+                            domain_urls, 
+                            search_engine=search_engine
+                        )
+                        
+                        if success:
+                            submitted_count += len(domain_urls)
+                            self.logger.info(f"Successfully submitted {len(domain_urls)} URLs to {search_engine}")
+                        else:
+                            self.logger.error(f"Failed to submit URLs to {search_engine}: {message}")
+                    else:
+                        # Submit URLs individually
+                        for url in domain_urls:
+                            success, message = self.indexnow_client.submit_url(
+                                url, 
+                                search_engine=search_engine
+                            )
+                            
+                            if success:
+                                submitted_count += 1
+                                self.logger.info(f"Successfully submitted {url} to {search_engine}")
+                            else:
+                                self.logger.error(f"Failed to submit {url} to {search_engine}: {message}")
+            
+            return submitted_count
+        except Exception as e:
+            self.logger.error(f"Error submitting URLs to IndexNow: {str(e)}")
+            return 0
+    
     def crawl(self, urls: Union[str, List[str]] = None) -> None:
         """
         Start the crawling process.
@@ -117,6 +210,9 @@ class SheikhBot:
             "pages_indexed": 0,
             "errors": 0
         }
+        
+        # For collecting URLs to submit to IndexNow
+        indexnow_urls = []
         
         # Crawl each URL with each enabled crawler
         for url in urls:
@@ -147,6 +243,16 @@ class SheikhBot:
                     if self.config["index_settings"]["build_index"]:
                         self.index_builder.add_to_index(crawl_results)
                     
+                    # Collect URLs for IndexNow submission if enabled
+                    if "indexnow" in self.config and self.config["indexnow"]["enabled"] and self.config["indexnow"]["auto_submit"]:
+                        if self.indexnow_client:
+                            if isinstance(crawl_results, list):
+                                for result in crawl_results:
+                                    if "url" in result and result["url"]:
+                                        indexnow_urls.append(result["url"])
+                            elif isinstance(crawl_results, dict) and "url" in crawl_results and crawl_results["url"]:
+                                indexnow_urls.append(crawl_results["url"])
+                    
                     stats["urls_crawled"] += 1
                     stats["pages_indexed"] += len(crawl_results) if isinstance(crawl_results, list) else 1
                     
@@ -154,12 +260,19 @@ class SheikhBot:
                     self.logger.error(f"Error crawling {normalized_url} with {crawler_type} crawler: {str(e)}")
                     stats["errors"] += 1
         
+        # Submit collected URLs to IndexNow if enabled
+        if indexnow_urls and "indexnow" in self.config and self.config["indexnow"]["enabled"] and self.config["indexnow"]["auto_submit"]:
+            submitted_count = self.submit_urls_to_indexnow(indexnow_urls)
+            stats["urls_submitted_to_indexnow"] = submitted_count
+        
         # Calculate crawl duration
         stats["duration"] = time.time() - stats["start_time"]
         
         self.logger.info(f"Crawl completed in {stats['duration']:.2f} seconds")
         self.logger.info(f"URLs crawled: {stats['urls_crawled']}")
         self.logger.info(f"Pages indexed: {stats['pages_indexed']}")
+        if "urls_submitted_to_indexnow" in stats:
+            self.logger.info(f"URLs submitted to IndexNow: {stats['urls_submitted_to_indexnow']}")
         self.logger.info(f"Errors: {stats['errors']}")
         
         # Save crawl stats

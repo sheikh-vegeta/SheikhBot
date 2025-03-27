@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -410,6 +410,47 @@
         [lang="en"] .en-text {
             display: block;
         }
+
+        /* Trusted Partners Section */
+        .trusted-partners {
+            padding: 4rem 0;
+            background: #f8f9fa;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 2rem;
+            align-items: center;
+            justify-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .partner-logo {
+            max-width: 160px;
+            height: auto;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+
+        .partner-logo:hover {
+            filter: grayscale(0%);
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
     </style>
 
     <!-- Language metadata -->
@@ -583,6 +624,27 @@ pip install central-search
         </div>
     </section>
 
+    <section class="trusted-partners">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="en">Trusted Partners</h2>
+                <h2 class="bn">বিশ্বস্ত অংশীদার</h2>
+                <p class="en">Empowering businesses worldwide with advanced SEO solutions</p>
+                <p class="bn">উন্নত এসইও সমাধানের মাধ্যমে বিশ্বব্যাপী ব্যবসায়কে শক্তিশালী করা</p>
+            </div>
+            <div class="partners-grid">
+                <img src="assets/786-rc-icon-round.png" alt="RC Icon" class="partner-logo">
+                <img src="assets/microsoft.png" alt="Microsoft" class="partner-logo">
+                <img src="assets/HubSpot-Logo.wine.svg" alt="HubSpot" class="partner-logo">
+                <img src="assets/Moz_logo.svg.png" alt="Moz" class="partner-logo">
+                <img src="assets/govt.webp" alt="Government" class="partner-logo">
+                <img src="assets/VORTEX_logo_with_VIVOTEK.png" alt="Vortex" class="partner-logo">
+                <img src="assets/logo (2).svg" alt="Partner" class="partner-logo">
+                <img src="assets/id5KWlBICs_logos.svg" alt="Partner" class="partner-logo">
+            </div>
+        </div>
+    </section>
+
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -629,6 +691,11 @@ pip install central-search
         </div>
     </footer>
 
+    <div class="language-toggle" onclick="toggleLanguage()">
+        <span class="en">বাংলা</span>
+        <span class="bn">English</span>
+    </div>
+
     <script>
         // Mobile menu toggle
         document.getElementById('mobile-menu').addEventListener('click', function() {
@@ -648,6 +715,13 @@ pip install central-search
                 document.getElementById('nav-links').classList.remove('active');
             });
         });
+
+        // Add after existing scripts
+        function toggleLanguage() {
+            const html = document.documentElement;
+            const currentLang = html.getAttribute('lang');
+            html.setAttribute('lang', currentLang === 'bn' ? 'en' : 'bn');
+        }
     </script>
 </body>
 </html>

@@ -28,6 +28,7 @@ jobs:
           pip install numpy==1.23.5  # Pin numpy version
           pip install pandas==1.5.3  # Pin pandas version
           pip install python-whois
+          pip install dnspython  # Add DNS resolver
           pip install -r requirements.txt
           pip install datasets transformers huggingface_hub
           

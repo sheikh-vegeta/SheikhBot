@@ -54,7 +54,26 @@ The included GitHub Actions workflow allows you to automatically run Central Sea
    - Crawl depth
    - Which crawlers to use (desktop, mobile, image)
 
-**Important Note:** If you're encountering indentation errors when running the workflow, make sure all Python code blocks in the YAML file are properly indented. Each line of Python code in the workflow file should be indented with the same number of spaces.
+#### Troubleshooting GitHub Actions
+
+If you encounter indentation errors in your GitHub Actions workflow:
+
+1. We've restructured the workflow to use dedicated script files located in `scripts/github_actions/`:
+   - `modify_config.py`: Creates a modified configuration based on input parameters
+   - `run_crawler.py`: Runs the Central crawler with a specified URL and configuration
+   - `build_index.py`: Builds an index of crawled results for GitHub Pages
+   - `index_template.html`: Template for the GitHub Pages index
+
+2. This approach avoids YAML indentation issues that often occur with multi-line Python scripts embedded in workflows.
+
+3. If you need to modify the workflow scripts:
+   - Edit the Python files directly in the `scripts/github_actions/` directory
+   - Make sure to commit and push these changes to your repository
+
+4. On Windows, make sure the script files are recognized as executable in git:
+   ```bash
+   git update-index --chmod=+x scripts/github_actions/*.py
+   ```
 
 ### Configuration Options
 

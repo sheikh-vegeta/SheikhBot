@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Search Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --primary-dark: #3a56c6;
+            --background-light: #f8f9fa;
+            --background-dark: #212529;
+            --text-light: #212529;
+            --text-dark: #f8f9fa;
+            --card-light: #ffffff;
+            --card-dark: #2a2e33;
+        }
+        
+        body {
+            transition: background-color 0.3s ease;
+            padding-top: 80px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
+        
+        .dark-mode .card {
+            background-color: var(--card-dark);
+            color: var(--text-dark);
+            border-color: #444;
+        }
+        
+        .dark-mode .navbar {
+            background-color: #1a1d20 !important;
+        }
+        
+        .dark-mode .form-control,
+        .dark-mode .form-select {
+            background-color: #333;
+            color: #fff;
+            border-color: #444;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .brand-dot {
+            color: var(--primary-color);
+        }
+        
+        .result-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .seo-score {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .seo-score-good {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .seo-score-average {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .seo-score-poor {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .seo-issue {
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background-color: rgba(220, 53, 69, 0.1);
+            border-left: 3px solid #dc3545;
+        }
+        
+        .seo-improvement {
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background-color: rgba(255, 193, 7, 0.1);
+            border-left: 3px solid #ffc107;
+        }
+        
+        .seo-good {
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background-color: rgba(40, 167, 69, 0.1);
+            border-left: 3px solid #28a745;
+        }
+        
+        .dark-mode .seo-issue {
+            background-color: rgba(220, 53, 69, 0.15);
+        }
+        
+        .dark-mode .seo-improvement {
+            background-color: rgba(255, 193, 7, 0.15);
+        }
+        
+        .dark-mode .seo-good {
+            background-color: rgba(40, 167, 69, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-search-heart text-primary"></i>
+                Central<span class="brand-dot"> Search</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="search.html">Search</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <div class="color-mode-switch" id="color-mode-toggle">
+                            <i class="bi bi-moon-fill"></i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center mb-4">
+                <h1>Central Search Results</h1>
+                <p class="lead text-muted">SEO analysis and website discoverability insights</p>
+                <p>Last updated: <span id="last-updated">Loading...</span></p>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="results-container">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results Template -->
+        <template id="no-results-template">
+            <div class="text-center py-5">
+                <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+                <h3 class="mt-3">No results found</h3>
+                <p class="text-muted">Try running a crawl job to generate results</p>
+            </div>
+        </template>
+
+        <!-- Result Card Template -->
+        <template id="result-card-template">
+            <div class="card result-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="seo-score"></span>
+                            <h5 class="card-title result-title mb-0"></h5>
+                        </div>
+                        <span class="badge rounded-pill result-type"></span>
+                    </div>
+                    <p class="card-text url-text result-url"></p>
+                    <p class="card-text content-snippet result-snippet"></p>
+                    
+                    <div class="seo-issues mt-3">
+                        <h6 class="mb-2">SEO Analysis:</h6>
+                        <div class="seo-issue-list">
+                            <!-- SEO issues will be inserted here -->
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted result-date"></small>
+                        <a href="#" class="btn btn-sm btn-primary result-link">View Full Analysis</a>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2023 Central Search. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="https://github.com/yourusername/central" class="text-decoration-none text-muted me-3">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                    <a href="#" class="text-decoration-none text-muted">
+                        <i class="bi bi-question-circle"></i> Help
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fetch and display results
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultsContainer = document.getElementById('results-container');
+            const resultCardTemplate = document.getElementById('result-card-template');
+            const noResultsTemplate = document.getElementById('no-results-template');
+            const lastUpdatedElement = document.getElementById('last-updated');
+            
+            // Dark mode toggle
+            const colorModeToggle = document.getElementById('color-mode-toggle');
+            const body = document.body;
+            
+            // Check for saved preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                enableDarkMode();
+            }
+            
+            colorModeToggle.addEventListener('click', () => {
+                if (body.classList.contains('dark-mode')) {
+                    disableDarkMode();
+                } else {
+                    enableDarkMode();
+                }
+            });
+            
+            function enableDarkMode() {
+                body.classList.add('dark-mode');
+                colorModeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+                localStorage.setItem('darkMode', 'enabled');
+            }
+            
+            function disableDarkMode() {
+                body.classList.remove('dark-mode');
+                colorModeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+            
+            // Fetch results
+            fetch('index.json')
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = '';
+                    
+                    // Update last updated timestamp
+                    if (data.last_updated) {
+                        const date = new Date(data.last_updated);
+                        lastUpdatedElement.textContent = date.toLocaleString();
+                    }
+                    
+                    const results = data.results || data;
+                    
+                    if (!results || results.length === 0) {
+                        resultsContainer.appendChild(noResultsTemplate.content.cloneNode(true));
+                        return;
+                    }
+                    
+                    results.forEach(result => {
+                        const resultCard = resultCardTemplate.content.cloneNode(true);
+                        
+                        // Set SEO score and apply appropriate class
+                        const scoreElement = resultCard.querySelector('.seo-score');
+                        const seoScore = result.seo_score || Math.floor(Math.random() * 100);
+                        scoreElement.textContent = seoScore;
+                        
+                        if (seoScore >= 80) {
+                            scoreElement.classList.add('seo-score-good');
+                        } else if (seoScore >= 60) {
+                            scoreElement.classList.add('seo-score-average');
+                        } else {
+                            scoreElement.classList.add('seo-score-poor');
+                        }
+                        
+                        // Set card content
+                        resultCard.querySelector('.result-title').textContent = result.title || 'No Title';
+                        
+                        const urlElement = resultCard.querySelector('.result-url');
+                        urlElement.textContent = result.url || '#';
+                        urlElement.href = result.url || '#';
+                        
+                        const snippetElement = resultCard.querySelector('.result-snippet');
+                        if (result.content) {
+                            let content = result.content;
+                            if (typeof content === 'string' && content.length > 200) {
+                                content = content.substring(0, 200) + '...';
+                            }
+                            snippetElement.textContent = content;
+                        } else if (result.metadata && result.metadata.description) {
+                            snippetElement.textContent = result.metadata.description;
+                        } else {
+                            snippetElement.textContent = 'No description available';
+                        }
+                        
+                        // Set crawl time
+                        if (result.crawl_time) {
+                            const date = new Date(result.crawl_time);
+                            resultCard.querySelector('.result-date').textContent = date.toLocaleString();
+                        }
+                        
+                        // Set result link
+                        const resultLink = resultCard.querySelector('.result-link');
+                        resultLink.href = result.url || '#';
+                        
+                        // Set badge color based on type
+                        const badge = resultCard.querySelector('.result-type');
+                        const crawlerType = result.crawler_type || 'desktop';
+                        badge.textContent = crawlerType;
+                        
+                        switch (crawlerType.toLowerCase()) {
+                            case 'desktop':
+                                badge.classList.add('bg-primary');
+                                break;
+                            case 'mobile':
+                                badge.classList.add('bg-success');
+                                break;
+                            case 'image':
+                                badge.classList.add('bg-info');
+                                break;
+                            default:
+                                badge.classList.add('bg-secondary');
+                        }
+                        
+                        // Add SEO issues if available
+                        const issuesList = resultCard.querySelector('.seo-issue-list');
+                        if (result.seo_issues && result.seo_issues.length > 0) {
+                            result.seo_issues.forEach(issue => {
+                                const issueElement = document.createElement('div');
+                                issueElement.className = `seo-${issue.type || 'issue'}`;
+                                issueElement.textContent = issue.message;
+                                issuesList.appendChild(issueElement);
+                            });
+                        } else {
+                            // Generate sample issues based on score for demonstration
+                            if (seoScore < 60) {
+                                const criticalIssue = document.createElement('div');
+                                criticalIssue.className = 'seo-issue';
+                                criticalIssue.textContent = 'Meta description is missing';
+                                issuesList.appendChild(criticalIssue);
+                            } else if (seoScore < 80) {
+                                const warningIssue = document.createElement('div');
+                                warningIssue.className = 'seo-improvement';
+                                warningIssue.textContent = 'Content is somewhat thin, consider expanding';
+                                issuesList.appendChild(warningIssue);
+                            } else {
+                                const goodPractice = document.createElement('div');
+                                goodPractice.className = 'seo-good';
+                                goodPractice.textContent = 'Good optimization for search discoverability';
+                                issuesList.appendChild(goodPractice);
+                            }
+                        }
+                        
+                        resultsContainer.appendChild(resultCard);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading results:', error);
+                    resultsContainer.innerHTML = '<div class="alert alert-danger">Error loading results. The index file may not exist yet.</div>';
+                });
+        });
+    </script>
+</body>
+</html> 

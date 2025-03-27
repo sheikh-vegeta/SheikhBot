@@ -27,6 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy==1.23.5  # Pin numpy version
           pip install pandas==1.5.3  # Pin pandas version
+          pip install python-whois
           pip install -r requirements.txt
           pip install datasets transformers huggingface_hub
           

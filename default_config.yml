@@ -1,0 +1,251 @@
+######################################################################
+#             Central Search - Default Configuration File             #
+######################################################################
+# You can customize this file to configure how Central Search works.  #
+# For more information, visit: https://github.com/sheikh-vegeta/SheikhBot #
+######################################################################
+
+# General settings
+general:
+  name: "Central Search"
+  version: "1.1.0"
+  description: "Advanced web crawler with SEO analysis and search discoverability tools"
+  author: "Sheikh"
+
+# Logging settings
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "logs/central.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  backup_count: 5
+  max_size_mb: 10
+
+# Crawl settings
+crawl_settings:
+  # Start URLs (used when no URLs provided via command line)
+  start_urls:
+    - "https://example.com"
+  
+  # Crawl depth
+  max_depth: 3
+  
+  # Delay between requests in seconds
+  delay: 1.0
+  
+  # Request timeout in seconds
+  timeout: 30
+  
+  # Maximum pages to crawl (0 for unlimited)
+  max_pages: 1000
+  
+  # Whether to respect robots.txt
+  respect_robots_txt: true
+  
+  # Whether to follow redirects
+  follow_redirects: true
+  
+  # Whether to verify SSL certificates
+  verify_ssl: true
+  
+  # Default user agent
+  user_agent: "Central/1.1.0 (+https://github.com/sheikh-vegeta/SheikhBot)"
+
+# IndexNow settings for instant search engine notification
+indexnow:
+  enabled: false
+  api_key: ""  # Your IndexNow API key (e.g., "cb7a0c39fe74468ba119283e95c08b00")
+  key_location: ""  # Optional URL where your key file is hosted (leave empty to use default location)
+  search_engines:  # Which search engines to submit to
+    - "default"  # Uses the unified IndexNow API (submits to all participating search engines)
+    # Uncomment to submit to specific engines directly
+    # - "bing"
+    # - "yandex"
+    # - "seznam"
+    # - "naver"
+    # - "yep"
+  auto_submit: true  # Whether to automatically submit URLs after crawling
+  bulk_submit: true  # Whether to submit URLs in bulk or individually
+  generate_key_file: true  # Whether to generate the key file in the output directory
+
+# Specialized crawlers
+specialized_crawlers:
+  desktop:
+    enabled: true
+    user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Central/1.1.0"
+    viewport: "1920x1080"
+    js_rendering: true
+    wait_time: 5  # seconds to wait for JavaScript to load
+  
+  mobile:
+    enabled: true
+    user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1 Central/1.1.0"
+    viewport: "375x812"
+    js_rendering: true
+    wait_time: 5  # seconds to wait for JavaScript to load
+  
+  image:
+    enabled: true
+    user_agent: "Central-Image/1.1.0 (+https://github.com/sheikh-vegeta/SheikhBot)"
+    image_extensions: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".avif"]
+    min_size: "100x100"  # minimum image dimensions to save
+    download: true  # whether to download images
+
+# Content extraction
+content_extraction:
+  content_selectors:
+    - "article"
+    - "main"
+    - ".content"
+    - "#content"
+    - ".post"
+    - ".entry"
+    - ".article"
+    - "body"
+  
+  metadata_selectors:
+    title:
+      - "meta[property='og:title']"
+      - "meta[name='twitter:title']"
+      - "title"
+    description:
+      - "meta[property='og:description']"
+      - "meta[name='twitter:description']"
+      - "meta[name='description']"
+    author:
+      - "meta[property='article:author']"
+      - "meta[name='author']"
+      - ".author"
+    date:
+      - "meta[property='article:published_time']"
+      - "meta[property='article:modified_time']"
+      - "time"
+
+# SEO analysis settings
+seo_analysis:
+  enabled: true
+  factors:
+    title_length: 
+      min: 30
+      max: 60
+      weight: 5
+    meta_description_length:
+      min: 120
+      max: 160
+      weight: 4
+    headings_structure:
+      weight: 3
+    content_word_count:
+      min: 300
+      weight: 3
+    keyword_density:
+      min: 0.5
+      max: 2.5
+      weight: 4
+    image_alt_text:
+      weight: 2
+    internal_links:
+      min: 2
+      weight: 3
+    external_links:
+      weight: 2
+    mobile_friendly:
+      weight: 5
+    page_load_speed:
+      weight: 4
+    https:
+      weight: 5
+    structured_data:
+      weight: 3
+
+# Export settings
+export_settings:
+  format: "json"  # json, csv, xml
+  output_directory: "data"
+  create_timestamp_subdir: true
+  pretty_print: true
+  data_structure:
+    - url
+    - title
+    - content
+    - metadata
+    - crawler_type
+    - crawl_time
+    - seo_score
+
+# Storage settings
+storage:
+  type: "file"  # file, mongodb
+  
+  # Cache settings
+  cache:
+    enabled: true
+    directory: "cache"
+    max_size_mb: 500
+    expiry_days: 7
+  
+  # Database settings
+  database:
+    enabled: false
+    type: "sqlite"  # sqlite, mysql, postgresql
+    path: "db/central.db"
+    connection_string: ""  # for mysql/postgresql
+
+# Search engine settings
+search_engine:
+  enabled: true
+  index_directory: "search_index"
+  search_fields:
+    - title
+    - content
+    - url
+    - metadata.description
+  boost_factors:
+    title: 3.0
+    content: 1.0
+    url: 2.0
+    metadata.description: 1.5
+  snippet_size: 200
+  max_results: 100
+
+# GitHub Pages settings
+github_pages:
+  enabled: true
+  output_directory: "docs"
+  template_directory: "templates"
+  default_template: "index.html"
+  site_title: "Central Search Results"
+  site_description: "Website analysis and SEO insights from Central"
+  show_statistics: true
+  items_per_page: 20
+  features:
+    dark_mode: true
+    search: true
+    filtering: true
+    sorting: true
+    pagination: true
+
+# Domain restrictions
+allowed_domains: []  # Empty = no restrictions, otherwise only crawl these domains
+
+# URL exclusion patterns (regex)
+excluded_urls:
+  - ".*\\.(pdf|zip|rar|tar|gz|doc|docx|xls|xlsx|ppt|pptx)$"
+  - "/wp-admin/.*"
+  - "/wp-login\\.php"
+  - "/wp-content/uploads/.*"
+  - "/tag/.*"
+  - "/category/.*"
+  - ".*[?&]utm_.*"
+
+# Authentication settings (for accessing protected content)
+authentication:
+  enabled: false
+  method: "basic"  # basic, oauth, cookie
+  credentials:
+    username: ""
+    password: ""
+  oauth:
+    client_id: ""
+    client_secret: ""  # Use environment variable CLIENT_SECRET for security
+    token_url: ""
+    scope: "" 

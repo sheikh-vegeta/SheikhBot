@@ -1,0 +1,104 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+python_classes = "Test*"
+addopts = "--cov=src --cov-report=term --cov-report=xml"
+
+[tool.poetry]
+name = "central-search"
+version = "1.1.0"
+description = "Advanced web crawler and SEO analysis toolkit"
+authors = ["Sheikh <sheikh@example.com>"]
+maintainers = ["Sheikh <sheikh@example.com>"]
+readme = "README.md"
+repository = "https://github.com/sheikh-vegeta/SheikhBot"
+documentation = "https://github.com/sheikh-vegeta/SheikhBot/wiki"
+keywords = ["web crawler", "seo", "search", "indexing", "indexnow"]
+license = "MIT"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+]
+packages = [
+    { include = "src" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+requests = "^2.25.0"
+beautifulsoup4 = "^4.9.0"
+pyyaml = "^5.1"
+selenium = "^4.0.0"
+webdriver-manager = "^3.5.0"
+lxml = "^4.6.0"
+tqdm = "^4.50.0"
+colorama = "^0.4.4"
+html5lib = "^1.1"
+pyppeteer = "^1.0.0"
+validators = "^0.18.0"
+pymongo = { version = "^3.11.0", optional = true }
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.0.0"
+pytest-cov = "^2.10.0"
+black = "^21.5b2"
+isort = "^5.9.0"
+pylint = "^2.8.0"
+mypy = "^0.812"
+
+[tool.poetry.extras]
+mongodb = ["pymongo"]
+
+[tool.poetry.scripts]
+central = "central:main" 

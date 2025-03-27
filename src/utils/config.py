@@ -1,109 +1,204 @@
 """
-Config utilities for loading and saving configuration.
+Configuration utilities for Central Search.
+
+This module provides functions to load, save, and validate configuration files.
 """
 
 import os
 import yaml
-from typing import Dict, Any
+import logging
+from typing import Dict, Any, Optional
+from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
-def load_config(config_file: str) -> Dict[str, Any]:
+def load_config(config_path: str) -> Dict[str, Any]:
     """
     Load configuration from a YAML file.
     
     Args:
-        config_file (str): Path to configuration file
+        config_path: Path to the configuration file
         
     Returns:
-        Dict[str, Any]: Configuration dictionary
+        dict: Loaded configuration
+        
+    Raises:
+        FileNotFoundError: If the configuration file does not exist
+        yaml.YAMLError: If the configuration file is invalid YAML
     """
-    if not os.path.exists(config_file):
-        raise FileNotFoundError(f"Configuration file not found: {config_file}")
+    logger.debug(f"Loading configuration from {config_path}")
     
-    with open(config_file, "r") as f:
-        config = yaml.safe_load(f)
+    if not os.path.exists(config_path):
+        logger.error(f"Configuration file not found: {config_path}")
+        raise FileNotFoundError(f"Configuration file not found: {config_path}")
     
-    return config
+    try:
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
+            
+        if not isinstance(config, dict):
+            logger.error(f"Invalid configuration format: not a dictionary")
+            raise ValueError("Invalid configuration format: not a dictionary")
+            
+        logger.debug(f"Configuration loaded successfully from {config_path}")
+        return config
+    except yaml.YAMLError as e:
+        logger.error(f"Error parsing configuration file: {str(e)}")
+        raise
 
 
-def save_config(config: Dict[str, Any], config_file: str) -> None:
+def save_config(config: Dict[str, Any], config_path: str) -> None:
     """
     Save configuration to a YAML file.
     
     Args:
-        config (Dict[str, Any]): Configuration dictionary
-        config_file (str): Path where to save the configuration
+        config: Configuration to save
+        config_path: Path to save the configuration to
+        
+    Raises:
+        ValueError: If the configuration is invalid
+        IOError: If the configuration cannot be saved
     """
-    with open(config_file, "w") as f:
-        yaml.dump(config, f, default_flow_style=False)
+    logger.debug(f"Saving configuration to {config_path}")
+    
+    if not isinstance(config, dict):
+        logger.error(f"Invalid configuration format: not a dictionary")
+        raise ValueError("Invalid configuration format: not a dictionary")
+    
+    try:
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(os.path.abspath(config_path)), exist_ok=True)
+        
+        with open(config_path, 'w') as f:
+            yaml.dump(config, f, default_flow_style=False)
+            
+        logger.debug(f"Configuration saved successfully to {config_path}")
+    except IOError as e:
+        logger.error(f"Error saving configuration file: {str(e)}")
+        raise
+
+
+def create_default_config() -> Dict[str, Any]:
+    """
+    Create a default configuration.
+    
+    Returns:
+        dict: Default configuration
+    """
+    # Try to load from default_config.yml in the package
+    package_dir = Path(__file__).parent.parent.parent
+    default_config_path = package_dir / "default_config.yml"
+    
+    if default_config_path.exists():
+        return load_config(str(default_config_path))
+    
+    # Fall back to hardcoded defaults
+    return {
+        "general": {
+            "name": "Central Search",
+            "version": "1.0.0",
+            "description": "Advanced web crawler with SEO analysis and search discoverability tools",
+            "author": "Central Team"
+        },
+        "logging": {
+            "level": "INFO",
+            "file": "logs/central.log",
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            "backup_count": 5,
+            "max_size_mb": 10
+        },
+        "crawl_settings": {
+            "start_urls": ["https://example.com"],
+            "max_depth": 3,
+            "delay": 1.0,
+            "timeout": 30,
+            "max_pages": 1000,
+            "respect_robots_txt": True,
+            "follow_redirects": True,
+            "verify_ssl": True,
+            "user_agent": "Central/1.0 (+https://github.com/yourusername/central)"
+        },
+        "export_settings": {
+            "format": "json",
+            "output_directory": "data",
+            "create_timestamp_subdir": True,
+            "pretty_print": True
+        },
+        "specialized_crawlers": {
+            "desktop": {"enabled": True},
+            "mobile": {"enabled": True},
+            "image": {"enabled": True}
+        },
+        "indexnow": {
+            "enabled": False,
+            "api_key": "",
+            "key_location": "",
+            "search_engines": ["default"],
+            "auto_submit": True,
+            "bulk_submit": True,
+            "generate_key_file": True
+        }
+    }
 
 
 def validate_config(config: Dict[str, Any]) -> bool:
     """
-    Validate configuration structure and values.
+    Validate the configuration.
     
     Args:
-        config (Dict[str, Any]): Configuration dictionary
+        config: Configuration to validate
         
     Returns:
-        bool: True if configuration is valid
-        
-    Raises:
-        ValueError: If configuration is invalid
+        bool: True if the configuration is valid, False otherwise
     """
-    # Check required top-level sections
-    required_sections = [
-        "general", "crawl_settings", "specialized_crawlers",
-        "export_settings", "storage", "content_extraction"
-    ]
+    # Basic validation - check required sections
+    required_sections = ["general", "logging", "crawl_settings", "export_settings"]
     
     for section in required_sections:
         if section not in config:
-            raise ValueError(f"Missing required configuration section: {section}")
+            logger.error(f"Required configuration section missing: {section}")
+            return False
     
-    # Validate crawl_settings
-    required_crawl_settings = [
-        "user_agent", "max_depth", "delay", "timeout", "respect_robots_txt"
-    ]
+    # Check required crawl settings
+    if "crawl_settings" in config:
+        required_crawl_settings = ["max_depth", "timeout", "max_pages"]
+        
+        for setting in required_crawl_settings:
+            if setting not in config["crawl_settings"]:
+                logger.error(f"Required crawl setting missing: {setting}")
+                return False
     
-    for setting in required_crawl_settings:
-        if setting not in config["crawl_settings"]:
-            raise ValueError(f"Missing required crawl setting: {setting}")
-    
-    # Validate specialized crawlers
-    required_crawlers = ["desktop", "mobile", "images"]
-    
-    for crawler in required_crawlers:
-        if crawler not in config["specialized_crawlers"]:
-            raise ValueError(f"Missing required specialized crawler configuration: {crawler}")
-    
-    # Check that at least one crawler is enabled
-    if not any(config["specialized_crawlers"][crawler].get("enabled", False) 
-               for crawler in config["specialized_crawlers"]):
-        raise ValueError("At least one specialized crawler must be enabled")
+    # Check indexnow settings if enabled
+    if "indexnow" in config and config["indexnow"].get("enabled", False):
+        if not config["indexnow"].get("api_key"):
+            logger.warning("IndexNow is enabled but no API key is provided")
     
     return True
 
 
-def merge_configs(base_config: Dict[str, Any], override_config: Dict[str, Any]) -> Dict[str, Any]:
+def get_config_value(config: Dict[str, Any], path: str, default: Any = None) -> Any:
     """
-    Merge two configuration dictionaries, with override_config taking precedence.
+    Get a value from the configuration using a dot-separated path.
     
     Args:
-        base_config (Dict[str, Any]): Base configuration
-        override_config (Dict[str, Any]): Override configuration
+        config: Configuration dictionary
+        path: Dot-separated path to the value (e.g., "crawl_settings.max_depth")
+        default: Default value to return if the path does not exist
         
     Returns:
-        Dict[str, Any]: Merged configuration
+        The value at the specified path, or the default value if it does not exist
     """
-    result = base_config.copy()
+    keys = path.split('.')
     
-    for key, value in override_config.items():
-        if isinstance(value, dict) and key in result and isinstance(result[key], dict):
-            # Recursively merge nested dictionaries
-            result[key] = merge_configs(result[key], value)
-        else:
-            # Override the value
-            result[key] = value
-    
-    return result 
+    current = config
+    try:
+        for key in keys:
+            if not isinstance(current, dict):
+                return default
+            current = current.get(key)
+            if current is None:
+                return default
+        return current
+    except Exception:
+        return default 

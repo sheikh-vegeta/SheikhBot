@@ -2,9 +2,9 @@ name: Domain Processing and Dataset Creation
 
 on:
   schedule:
-    - cron: '0 */12 * * *'  # Run every 12 hours
+    - cron: '0 */12 * * *'
   workflow_dispatch:
-
+  
 env:
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
   DATASET_REPO: "sheikh-vegeta/domain-intelligence"
@@ -13,8 +13,12 @@ env:
 jobs:
   process-domains:
     runs-on: ubuntu-latest
+    timeout-minutes: 120  # Add timeout
+    
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -22,25 +26,37 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy==1.23.5  # Pin numpy version
-          pip install pandas==1.5.3  # Pin pandas version
-          pip install python-whois
-          pip install dnspython  # Add DNS resolver
+          pip install numpy==1.23.5 pandas==1.5.3 python-whois dnspython
           pip install -r requirements.txt
           pip install datasets transformers huggingface_hub
-          
+        
       - name: Fetch Domain Data
+        id: fetch
+        continue-on-error: true
+        timeout-minutes: 30
         run: |
           python scripts/domain_processor/fetch_domains.py
           
       - name: Process and Analyze Domains
+        if: steps.fetch.outcome == 'success'
+        timeout-minutes: 30
         run: |
           python scripts/domain_processor/analyze_domains.py
           
       - name: Create HuggingFace Dataset
+        if: success()
+        timeout-minutes: 30
         run: |
           python scripts/domain_processor/create_dataset.py
         env:
@@ -48,7 +64,31 @@ jobs:
           
       - name: Train Model
         if: success()
+        timeout-minutes: 60
         run: |
           python scripts/domain_processor/train_model.py
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: process-artifacts
+          path: |
+            logs/
+            data/
+            models/
+          retention-days: 5
+
+      - name: Notify on Failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              title: 'Workflow failed: Domain Processing',
+              body: `Workflow failed on ${context.sha}. Check the logs for details.`
+            })

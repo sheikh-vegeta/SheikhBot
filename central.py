@@ -71,5 +71,19 @@ def main():
         sys.exit(1)
 
 
+def create_parser():
+    parser = argparse.ArgumentParser(description="Central Search CLI")
+    # ...existing code...
+    
+    # Add user agent argument
+    parser.add_argument(
+        "--user-agent",
+        choices=user_agents.get_available_user_agents(),
+        help="Select user agent to mimic (e.g., 'Googlebot')"
+    )
+    
+    return parser
+
+
 if __name__ == "__main__":
-    main() 
+    main()

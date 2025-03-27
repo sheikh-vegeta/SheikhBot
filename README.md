@@ -100,6 +100,27 @@ python main.py crawl https://example.com
 python main.py indexnow submit https://example.com/new-page
 ```
 
+## 🛠️ Advanced Features
+
+### User Agent Selection
+SheikhBot supports mimicking various web crawlers using the `--user-agent` flag:
+
+```bash
+# Use Googlebot user agent
+python main.py crawl --user-agent Googlebot https://example.com
+
+# Use Bingbot user agent
+python main.py crawl --user-agent Bingbot https://example.com
+```
+
+Available crawlers:
+- Googlebot - Google's crawler
+- Bingbot - Microsoft Bing's crawler
+- YandexBot - Yandex search crawler
+- AppleBot - Apple's web crawler
+- DuckDuckBot - DuckDuckGo's crawler
+- And many more...
+
 ## 🚀 Advanced Configuration | উন্নত কনফিগারেশন
 
 ### SEO Optimization Strategies | SEO অপ্টিমাইজেশন কৌশল

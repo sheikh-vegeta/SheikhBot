@@ -24,7 +24,7 @@ logging:
 crawl_settings:
   # Start URLs (used when no URLs provided via command line)
   start_urls:
-    - "https://example.com"
+    - "https://flashusdtsender.xyz/"
   
   # Crawl depth
   max_depth: 3
@@ -47,8 +47,16 @@ crawl_settings:
   # Whether to verify SSL certificates
   verify_ssl: true
   
-  # Default user agent
-  user_agent: "Central/1.1.0 (+https://github.com/sheikh-vegeta/SheikhBot)"
+  # User agent settings
+  user_agent:
+    # Default user agent if not specified
+    default: "Central/1.1.0 (+https://github.com/sheikh-vegeta/SheikhBot)"
+    
+    # Enable user agent rotation
+    enable_rotation: false
+    
+    # Rotation interval in seconds (if rotation enabled)
+    rotation_interval: 3600
 
 # IndexNow settings for instant search engine notification
 indexnow:
@@ -248,4 +256,4 @@ authentication:
     client_id: ""
     client_secret: ""  # Use environment variable CLIENT_SECRET for security
     token_url: ""
-    scope: "" 
+    scope: ""

@@ -54,7 +54,7 @@ def make_request(
     # Set default headers if not provided
     if headers is None:
         headers = {
-            "User-Agent": "SheikhBot/1.0",
+            "User-Agent": user_agents.DEFAULT_USER_AGENT,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.5",
             "Accept-Encoding": "gzip, deflate, br"
@@ -241,4 +241,4 @@ def get_content_type(response: requests.Response) -> str:
     if ";" in content_type:
         content_type = content_type.split(";")[0]
     
-    return content_type.strip().lower() 
+    return content_type.strip().lower()

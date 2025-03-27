@@ -10,6 +10,7 @@ Central Search is an advanced web crawling and SEO optimization toolkit designed
 - **Telegram Channel**: [t.me/RecentCoders](https://t.me/RecentCoders)
 - **GitHub**: [Sheikh Bot Repository](https://github.com/sheikh-vegeta/SheikhBot)
 
+
 ## 🌈 Project Flow Diagram | প্রোজেক্ট প্রবাহ ডায়াগ্রাম
 
 ```mermaid
@@ -22,7 +23,7 @@ flowchart TD
     F -->|Notify| G[IndexNow]
     G -->|Instant Indexing| H[Search Engines]
     
-    subgraph Advanced Features | উন্নত বৈশিষ্ট্য
+    subgraph Advanced Features
         D
         E
         F
@@ -33,6 +34,7 @@ flowchart TD
     style C fill:#bfb,stroke:#333,stroke-width:2px
     style G fill:#ff9,stroke:#333,stroke-width:2px
 ```
+
 
 [![Scheduled Web Crawling](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/crawl.yml/badge.svg)](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/crawl.yml)
 [![pages-build-deployment](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/sheikh-vegeta/SheikhBot/actions/workflows/pages/pages-build-deployment)

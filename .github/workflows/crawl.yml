@@ -1,0 +1,240 @@
+name: Scheduled Web Crawling
+
+on:
+  # Run on schedule
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight UTC
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: 'URLs to crawl (comma separated)'
+        required: false
+        default: ''
+      depth:
+        description: 'Crawl depth'
+        required: false
+        default: '3'
+      crawlers:
+        description: 'Crawlers to use (comma separated: desktop,mobile,image)'
+        required: false
+        default: 'desktop,mobile,image'
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+      
+      - name: Create logs directory
+        run: mkdir -p logs
+      
+      - name: Run Crawler with provided URLs
+        if: ${{ github.event.inputs.urls != '' }}
+        run: |
+          # Parse input parameters
+          IFS=',' read -ra URL_ARRAY <<< "${{ github.event.inputs.urls }}"
+          IFS=',' read -ra CRAWLER_ARRAY <<< "${{ github.event.inputs.crawlers }}"
+          
+          # Create a modified config with selected crawlers
+          python -c "
+          import yaml
+          import sys
+          
+          # Load the config
+          with open('config.yml', 'r') as f:
+              config = yaml.safe_load(f)
+          
+          # Set crawler enabled flags based on input
+          crawler_list = '${{ github.event.inputs.crawlers }}'.split(',')
+          for crawler_type in config['specialized_crawlers']:
+              config['specialized_crawlers'][crawler_type]['enabled'] = crawler_type in crawler_list
+          
+          # Set crawl depth
+          config['crawl_settings']['max_depth'] = int('${{ github.event.inputs.depth }}')
+          
+          # Save the modified config
+          with open('config_modified.yml', 'w') as f:
+              yaml.dump(config, f, default_flow_style=False)
+          "
+          
+          # Run the crawler for each URL
+          for url in "${URL_ARRAY[@]}"; do
+            echo "Crawling $url"
+            python -c "
+            from src.crawlers import SheikhBot
+            
+            # Initialize with modified config
+            bot = SheikhBot(config_file='config_modified.yml')
+            
+            # Crawl the URL
+            bot.crawl('$url')
+            
+            # Export data
+            bot.export_data()
+            "
+          done
+      
+      - name: Run Crawler with default URLs
+        if: ${{ github.event.inputs.urls == '' }}
+        run: |
+          python -c "
+          from src.crawlers import SheikhBot
+          
+          # Initialize with default config
+          bot = SheikhBot(config_file='config.yml')
+          
+          # Crawl using start_urls from config
+          bot.crawl()
+          
+          # Export data
+          bot.export_data()
+          "
+      
+      - name: Build GitHub Pages
+        run: |
+          # Create docs directory if it doesn't exist
+          mkdir -p docs
+          
+          # Move data to docs directory for GitHub Pages
+          cp -r data/* docs/
+          
+          # Create index.html if it doesn't exist
+          if [ ! -f docs/index.html ]; then
+            echo "<!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset='utf-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1'>
+                <title>SheikhBot Crawl Results</title>
+                <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css'>
+                <style>
+                    body { padding: 20px; }
+                    .result-card { margin-bottom: 20px; }
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <h1>SheikhBot Crawl Results</h1>
+                    <p>Last updated: $(date)</p>
+                    <div id='results'>
+                        <p>Loading results...</p>
+                    </div>
+                </div>
+                <script>
+                    // Fetch and display results
+                    fetch('index.json')
+                        .then(response => response.json())
+                        .then(data => {
+                            const resultsDiv = document.getElementById('results');
+                            resultsDiv.innerHTML = '';
+                            
+                            if (data.length === 0) {
+                                resultsDiv.innerHTML = '<p>No results found.</p>';
+                                return;
+                            }
+                            
+                            data.forEach(item => {
+                                const card = document.createElement('div');
+                                card.className = 'card result-card';
+                                
+                                const cardBody = document.createElement('div');
+                                cardBody.className = 'card-body';
+                                
+                                const title = document.createElement('h5');
+                                title.className = 'card-title';
+                                title.textContent = item.title || 'No Title';
+                                
+                                const url = document.createElement('p');
+                                url.className = 'card-text';
+                                const urlLink = document.createElement('a');
+                                urlLink.href = item.url;
+                                urlLink.textContent = item.url;
+                                url.appendChild(urlLink);
+                                
+                                const details = document.createElement('div');
+                                details.className = 'card-text';
+                                details.innerHTML = \`
+                                    <small>Crawler: \${item.crawler_type || 'unknown'}</small><br>
+                                    <small>Content Type: \${item.content_type || 'unknown'}</small><br>
+                                    <small>Crawl Time: \${item.crawl_time || 'unknown'}</small>
+                                \`;
+                                
+                                cardBody.appendChild(title);
+                                cardBody.appendChild(url);
+                                cardBody.appendChild(details);
+                                card.appendChild(cardBody);
+                                resultsDiv.appendChild(card);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error loading results:', error);
+                            document.getElementById('results').innerHTML = '<p>Error loading results.</p>';
+                        });
+                </script>
+            </body>
+            </html>" > docs/index.html
+          fi
+          
+          # Create a JSON index file of all results
+          python -c "
+          import os
+          import json
+          import glob
+          
+          # Find all JSON files in the data directory
+          json_files = glob.glob('data/**/*.json', recursive=True)
+          
+          # Read each file and extract basic info
+          results = []
+          for file_path in json_files:
+              try:
+                  with open(file_path, 'r') as f:
+                      data = json.load(f)
+                      
+                      # Handle both single objects and lists
+                      if isinstance(data, list):
+                          results.extend(data)
+                      else:
+                          results.append(data)
+              except Exception as e:
+                  print(f'Error reading {file_path}: {str(e)}')
+          
+          # Sort by crawl time if available
+          results.sort(key=lambda x: x.get('crawl_time', ''), reverse=True)
+          
+          # Limit to 1000 results to keep file size reasonable
+          results = results[:1000]
+          
+          # Write index file
+          with open('docs/index.json', 'w') as f:
+              json.dump(results, f)
+          
+          print(f'Created index with {len(results)} results')
+          "
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          force_orphan: true 

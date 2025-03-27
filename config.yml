@@ -1,0 +1,139 @@
+# SheikhBot Configuration File
+
+# General settings
+general:
+  name: "SheikhBot"
+  version: "1.0.0"
+  author: "Likhon Sheikh"
+  description: "A web crawler inspired by Googlebot"
+
+# Crawl settings
+crawl_settings:
+  user_agent: "SheikhBot/1.0 (+https://github.com/yourusername/sheikhbot)"
+  max_depth: 3
+  max_pages_per_site: 100
+  delay: 1.0  # Delay between requests in seconds
+  timeout: 30  # Request timeout in seconds
+  respect_robots_txt: true
+  follow_redirects: true
+  max_redirects: 5
+  retry_count: 3
+  handle_http_errors: true
+  verify_ssl: true
+
+# Specialized crawlers configuration
+specialized_crawlers:
+  desktop:
+    enabled: true
+    user_agent: "SheikhBot-Desktop/1.0"
+    viewport: "1920x1080"
+  
+  mobile:
+    enabled: true
+    user_agent: "SheikhBot-Mobile/1.0"
+    viewport: "375x812"
+  
+  news:
+    enabled: false
+    user_agent: "SheikhBot-News/1.0"
+    article_selectors:
+      - ".article"
+      - ".news-item"
+      - "article"
+  
+  images:
+    enabled: true
+    user_agent: "SheikhBot-Images/1.0"
+    image_extensions: [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+    min_size: "100x100"
+    download: false
+  
+  videos:
+    enabled: false
+    user_agent: "SheikhBot-Videos/1.0"
+    video_extensions: [".mp4", ".webm", ".mov", ".avi"]
+    download: false
+
+# Export settings
+export_settings:
+  format: "json"  # Options: json, csv, xml
+  pretty_print: true
+  output_directory: "./data"
+  filename_template: "{domain}_{timestamp}"
+  include_metadata: true
+
+# Storage settings
+storage:
+  type: "file"  # Options: file, mongodb, elasticsearch
+  file:
+    path: "./data"
+  mongodb:
+    uri: "mongodb://localhost:27017/"
+    database: "sheikhbot_db"
+    collection: "crawl_data"
+
+# Index settings
+index_settings:
+  build_index: true
+  index_type: "inverted"  # Options: inverted, vector
+  stemming: true
+  remove_stopwords: true
+  language: "english"
+  case_sensitive: false
+
+# GitHub Pages settings
+github_pages:
+  enabled: true
+  theme: "minima"
+  title: "SheikhBot Crawl Results"
+  description: "Web crawling results by SheikhBot"
+  index_template_path: "./docs/templates/index.html"
+  results_per_page: 20
+
+# Allowed domains - empty means all domains are allowed
+allowed_domains: []
+
+# URLs to start crawling from
+start_urls:
+  - "https://example.com"
+  - "https://example.org"
+
+# Excluded URLs patterns (regex)
+excluded_urls:
+  - ".*login.*"
+  - ".*signup.*"
+  - ".*logout.*"
+  - ".*contact.*"
+  - ".*privacy.*"
+  - ".*terms.*"
+
+# Content extraction settings
+content_extraction:
+  title_selectors:
+    - "title"
+    - "h1"
+  content_selectors:
+    - "article"
+    - ".content"
+    - ".post"
+    - "main"
+  metadata_selectors:
+    author:
+      - ".author"
+      - "meta[name='author']"
+    date:
+      - ".date"
+      - "time"
+      - "meta[name='date']"
+    description:
+      - "meta[name='description']"
+      - ".description"
+
+# Logging settings
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "./logs/sheikhbot.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  rotate: true
+  max_size: 10  # MB
+  backup_count: 5 
